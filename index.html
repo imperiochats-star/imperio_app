@@ -3,7 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0B132B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>ImperiumCHATs</title>
+    <!-- MANIFIESTO PWA DINÁMICO PARA PERMITIR INSTALACIÓN EN ANDROID / CHROME -->
+    <script>
+        const manifestData = {
+            "name": "ImperiumChats",
+            "short_name": "ImperiumChats",
+            "start_url": "./",
+            "display": "standalone",
+            "background_color": "#0B132B",
+            "theme_color": "#0B132B",
+            "icons": [
+                {
+                    "src": "https://storage.googleapis.com/generative-ai-downloads/images/image_888c61.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        };
+        const stringManifest = JSON.stringify(manifestData);
+        const blob = new Blob([stringManifest], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(blob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -39,16 +67,16 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-0 sm:p-4">
 
-    <!-- CONTENEDOR TIPO TELÉFONO MÓVIL -->
+    <!-- CONTENEDOR TIPO TELÉFONO MÓVIL / PWA -->
     <div class="w-full sm:max-w-[400px] h-[100vh] sm:h-[844px] bg-imperialDark sm:rounded-[40px] sm:border-[8px] sm:border-slate-800 flex flex-col relative overflow-hidden shadow-2xl">
 
         <!-- PANTALLA DE ACCESO OBLIGATORIO (REGISTRO / INICIO DE SESIÓN) -->
         <div id="login-screen" class="absolute inset-0 bg-imperialDark z-50 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
             
-            <!-- LOGOTIPO VECTORIAL OFICIAL (Corona de Rey Definitiva + Burbuja de Chat) -->
-            <div class="flex flex-col items-center mb-4">
-                <div class="w-24 h-24 rounded-3xl bg-gradient-to-b from-[#16223F] to-[#0A1022] border-2 border-neonCyan glow-cyan flex items-center justify-center relative shadow-2xl mb-2">
-                    <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- LOGOTIPO VECTORIAL OFICIAL -->
+            <div class="flex flex-col items-center mb-3">
+                <div class="w-20 h-20 rounded-3xl bg-gradient-to-b from-[#16223F] to-[#0A1022] border-2 border-neonCyan glow-cyan flex items-center justify-center relative shadow-2xl mb-2">
+                    <svg class="w-14 h-14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M25 38L32 18L43 30L50 14L57 30L68 18L75 38H25Z" fill="url(#crownGrad)" stroke="#FFD700" stroke-width="1.8" stroke-linejoin="round"/>
                         <path d="M23 41H77V44H23V41Z" fill="#FFD700"/>
                         <circle cx="32" cy="16" r="2.5" fill="#FFD700"/>
@@ -66,42 +94,35 @@
                         </defs>
                     </svg>
                 </div>
-                <h1 class="text-xl font-black tracking-tight">
+                <h1 class="text-lg font-black tracking-tight">
                     <span class="text-white">Imperium</span><span class="gradient-logo">Chats</span>
                 </h1>
             </div>
 
-            <p class="text-slate-400 text-[11px] max-w-xs mb-4">Acceso exclusivo y verificado. Debes registrarte o iniciar sesión para ingresar.</p>
+            <p class="text-slate-400 text-[10px] max-w-xs mb-3">Acceso obligatorio. Registrate o inicia sesión para entrar al chat en tiempo real.</p>
             
-            <!-- FORMULARIO DE AUTENTICACIÓN OBLIGATORIA -->
-            <div class="w-full space-y-2.5 bg-imperialCard p-4 rounded-3xl border border-imperialBorder shadow-lg">
-                <!-- Selector de Pestaña (Iniciar Sesión / Registrarse) -->
-                <div class="flex bg-imperialDark p-1 rounded-xl mb-3 border border-imperialBorder">
+            <!-- FORMULARIO DE AUTENTICACIÓN -->
+            <div class="w-full space-y-2.5 bg-imperialCard p-3.5 rounded-3xl border border-imperialBorder shadow-lg">
+                <div class="flex bg-imperialDark p-1 rounded-xl mb-2 border border-imperialBorder">
                     <button onclick="switchAuthMode('login')" id="auth-tab-login" class="flex-1 py-1.5 text-[11px] font-bold rounded-lg bg-neonCyan text-imperialDark transition">Iniciar Sesión</button>
                     <button onclick="switchAuthMode('register')" id="auth-tab-register" class="flex-1 py-1.5 text-[11px] font-bold rounded-lg text-slate-400 transition">Registrarse</button>
                 </div>
 
-                <div id="register-fields" class="space-y-2.5 hidden">
+                <div id="register-fields" class="space-y-2 hidden">
                     <input type="text" id="reg-name" placeholder="Tu Nombre o Alias..." class="w-full px-3.5 py-2.5 bg-imperialDark border border-imperialBorder rounded-xl text-white focus:outline-none focus:border-neonCyan text-xs">
                 </div>
 
-                <input type="text" id="auth-username" placeholder="Usuario o Correo Gmail (@gmail.com)..." class="w-full px-3.5 py-2.5 bg-imperialDark border border-imperialBorder rounded-xl text-white focus:outline-none focus:border-neonCyan text-xs">
-                <input type="password" id="auth-password" placeholder="Contraseña de acceso..." class="w-full px-3.5 py-2.5 bg-imperialDark border border-imperialBorder rounded-xl text-white focus:outline-none focus:border-neonGold text-xs">
-                
+                <input type="text" id="auth-username" placeholder="Usuario o Correo Gmail..." class="w-full px-3.5 py-2.5 bg-imperialDark border border-imperialBorder rounded-xl text-white focus:outline-none focus:border-neonCyan text-xs">
+                <input type="password" id="auth-password" placeholder="Contraseña..." class="w-full px-3.5 py-2.5 bg-imperialDark border border-imperialBorder rounded-xl text-white focus:outline-none focus:border-neonGold text-xs">
                 <input type="password" id="sultan-key-input" placeholder="Clave secreta (Opcional para Sultán)..." class="w-full px-3.5 py-2.5 bg-imperialDark border border-imperialBorder rounded-xl text-white focus:outline-none focus:border-neonGold text-xs">
                 
                 <button onclick="validateAndLogin()" id="auth-submit-btn" class="w-full py-3 bg-gradient-logo text-imperialDark font-black rounded-xl shadow-lg hover:opacity-90 transition text-xs mt-1">
                     Entrar al Imperio
                 </button>
-                
-                <div class="relative flex py-1 items-center">
-                    <div class="flex-grow border-t border-imperialBorder"></div>
-                    <span class="flex-shrink mx-2 text-[9px] text-slate-500 uppercase">o acceso rápido</span>
-                    <div class="flex-grow border-t border-imperialBorder"></div>
-                </div>
 
-                <button onclick="loginWithGoogleAuth()" class="w-full py-2.5 bg-imperialDark border border-imperialBorder text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-slate-800 transition">
-                    <i class="fa-brands fa-google text-neonCyan"></i> Continuar con cuenta Google
+                <!-- BOTÓN DE INSTALACIÓN PWA -->
+                <button id="install-pwa-btn" onclick="installApp()" class="w-full py-2 bg-imperialDark border border-neonGold text-neonGold font-bold rounded-xl text-[11px] flex items-center justify-center gap-2 hidden mt-1">
+                    <i class="fa-solid fa-download"></i> Instalar Aplicación
                 </button>
             </div>
         </div>
@@ -110,13 +131,13 @@
         <div id="app-container" class="flex flex-col h-full hidden">
             <!-- BARRA SUPERIOR -->
             <header class="bg-imperialCard/80 backdrop-blur border-b border-imperialBorder px-4 py-3 flex items-center justify-between shrink-0">
-                <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('vault')" title="Ir a Bóveda de Avatares">
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('vault')" title="Bóveda de Avatares">
                     <div class="w-10 h-10 rounded-full bg-imperialDark border-2 border-neonGold flex items-center justify-center text-neonGold font-bold text-lg overflow-hidden shadow-md group-hover:scale-105 transition" id="header-avatar-container">
                         <span id="header-avatar" class="text-xl">👑</span>
                     </div>
                     <div>
                         <h2 class="text-xs font-bold text-white truncate max-w-[120px]" id="header-username">Plebeyo</h2>
-                        <span class="text-[9px] text-neonCyan uppercase font-semibold tracking-wider" id="header-role">Plebeyo • Nivel 1</span>
+                        <span class="text-[9px] text-neonCyan uppercase font-semibold tracking-wider" id="header-role">Plebeyo • En Línea</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -133,7 +154,7 @@
             <!-- CONTENIDO PRINCIPAL -->
             <main class="flex-1 overflow-y-auto p-4 space-y-4 relative" id="main-content-area">
                 
-                <!-- VISTA 1: GRAN BAZAR (SALAS) -->
+                <!-- VISTA 1: GRAN BAZAR (SALAS EN TIEMPO REAL) -->
                 <div id="tab-bazaar" class="space-y-4">
                     <div class="flex gap-2 overflow-x-auto pb-1 shrink-0 no-scrollbar">
                         <button onclick="filterRooms('provinces')" class="px-3 py-2 bg-imperialCard border border-neonCyan text-neonCyan rounded-xl text-xs font-bold whitespace-nowrap glow-cyan">🌍 Provincias</button>
@@ -151,7 +172,7 @@
                     
                     <div id="sultan-vault-admin" class="bg-imperialCard border border-neonGold p-3.5 rounded-2xl space-y-2.5 hidden">
                         <h4 class="text-xs font-bold text-neonGold"><i class="fa-solid fa-crown"></i> Panel de Control del Sultán</h4>
-                        <input type="text" id="vault-item-name" placeholder="Nombre del Avatar o Sticker..." class="w-full bg-imperialDark px-3 py-2 rounded text-[11px] border border-imperialBorder text-white">
+                        <input type="text" id="vault-item-name" placeholder="Nombre del Avatar..." class="w-full bg-imperialDark px-3 py-2 rounded text-[11px] border border-imperialBorder text-white">
                         <div class="flex gap-2">
                             <input type="number" id="vault-item-price" placeholder="Karma (0=Gratis)" class="w-1/2 bg-imperialDark px-3 py-2 rounded text-[11px] border border-imperialBorder text-white">
                             <select id="vault-item-type" class="w-1/2 bg-imperialDark px-3 py-2 rounded text-[11px] border border-imperialBorder text-white">
@@ -160,7 +181,7 @@
                             </select>
                         </div>
                         <input type="file" id="vault-item-file" accept="image/*" class="w-full text-[10px] text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-xl file:bg-neonGold file:text-imperialDark">
-                        <button onclick="sultanAddVaultItem()" class="w-full py-2 bg-neonGold text-imperialDark rounded-xl text-xs font-bold">Publicar en la Bóveda</button>
+                        <button onclick="sultanAddVaultItem()" class="w-full py-2 bg-neonGold text-imperialDark rounded-xl text-xs font-bold">Publicar</button>
                     </div>
 
                     <div class="space-y-3" id="vault-sections"></div>
@@ -172,35 +193,15 @@
                         <i class="fa-solid fa-dungeon text-4xl text-red-500 animate-pulse"></i>
                         <h2 class="text-base font-black text-red-400">La Mazmorra del Imperio</h2>
                         <p class="text-[11px] text-slate-300">Zona de aislamiento para almas infractoras.</p>
-                        <div class="bg-black/40 p-3 rounded-xl border border-red-900">
-                            <span class="text-[10px] text-slate-400">Condena restante:</span>
-                            <div class="text-xl font-mono font-bold text-red-400 mt-0.5">02:45:00</div>
-                        </div>
                         <button onclick="payDungeonFine()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2">
                             <i class="fa-brands fa-paypal"></i> Pagar Fianza vía PayPal ($2.99)
                         </button>
-                    </div>
-                    <div class="bg-imperialCard border border-imperialBorder rounded-2xl p-3 flex flex-col h-48">
-                        <span class="text-[11px] font-bold text-red-400 mb-2">Chat de Reclusos</span>
-                        <div class="flex-1 overflow-y-auto space-y-2 text-xs" id="dungeon-chat-logs">
-                            <div class="bg-black/30 p-2 rounded text-slate-400">Prisionero_99: Condenado por alterar el orden...</div>
-                        </div>
-                        <div class="flex gap-2 mt-2">
-                            <input type="text" id="dungeon-msg" placeholder="Hablar con reclusos..." class="flex-1 bg-imperialDark px-3 py-2 rounded-xl border border-imperialBorder text-xs text-white">
-                            <button onclick="sendDungeonMsg()" class="px-3 bg-red-600 text-white rounded-xl text-xs font-bold">Enviar</button>
-                        </div>
                     </div>
                 </div>
 
                 <!-- VISTA 4: TESORERÍA -->
                 <div id="tab-store" class="space-y-3 hidden">
                     <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-gem text-neonGold"></i> Tesorería y Artículos VIP</h3>
-                    <div id="sultan-store-admin" class="bg-imperialCard border border-neonGold p-3 rounded-2xl space-y-2 hidden">
-                        <h4 class="text-xs font-bold text-neonGold"><i class="fa-solid fa-crown"></i> Control del Sultán</h4>
-                        <input type="text" id="store-item-name" placeholder="Nombre del Paquete VIP..." class="w-full bg-imperialDark px-2 py-1.5 rounded text-[11px] border border-imperialBorder text-white">
-                        <input type="text" id="store-item-price" placeholder="Precio USD (Ej: $9.99)" class="w-full bg-imperialDark px-2 py-1.5 rounded text-[11px] border border-imperialBorder text-white">
-                        <button onclick="sultanAddStoreItem()" class="w-full py-1.5 bg-neonGold text-imperialDark rounded text-[11px] font-bold">Agregar a Tesorería</button>
-                    </div>
                     <div id="store-items-container" class="space-y-2.5">
                         <div class="bg-imperialCard border border-neonGold rounded-2xl p-4 space-y-2.5 glow-gold">
                             <div class="flex justify-between items-center">
@@ -243,49 +244,29 @@
             </nav>
         </div>
 
-        <!-- MODAL DE CHAT EN VIVO -->
+        <!-- MODAL DE CHAT EN TIEMPO REAL -->
         <div id="room-modal" class="absolute inset-0 bg-imperialDark z-50 hidden flex flex-col">
             <div class="bg-imperialCard border-b border-imperialBorder p-3 flex items-center justify-between">
                 <div>
                     <h3 class="font-bold text-white text-xs" id="modal-room-title">Sala Global</h3>
-                    <span class="text-[9px] text-neonCyan" id="modal-room-subtitle">190+ conectados • Anonimato Activo</span>
+                    <span class="text-[9px] text-neonCyan">💬 Chat en Tiempo Real Activo</span>
                 </div>
                 <button onclick="closeRoomModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <div id="vip-audio-panel" class="bg-imperialDark border-b border-neonGold p-2.5 hidden flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-full bg-neonGold/20 border border-neonGold flex items-center justify-center text-neonGold animate-spin text-xs">
-                        <i class="fa-solid fa-compact-disc"></i>
-                    </div>
-                    <div>
-                        <h5 class="text-[11px] font-bold text-white" id="dj-track">La Meskita: Ritmo del Sultán</h5>
-                        <span class="text-[8px] text-neonGold" id="dj-status">Reproduciendo en directo para todos</span>
-                    </div>
-                </div>
-                <div id="dj-controls">
-                    <button onclick="toggleAudioStream()" class="px-2.5 py-1 bg-neonGold text-imperialDark rounded text-[10px] font-bold" id="audio-stream-btn">Escuchar</button>
-                </div>
-            </div>
+            <div class="flex-1 overflow-y-auto p-3 space-y-2.5" id="room-messages"></div>
 
-            <div class="flex-1 overflow-y-auto p-3 space-y-2.5" id="room-messages">
-                <div class="bg-imperialCard/60 border border-imperialBorder p-2 rounded-xl max-w-[85%]">
-                    <span class="text-[9px] text-neonCyan font-bold">Nómada_44</span>
-                    <p class="text-xs text-white mt-0.5">¡Bienvenidos al gran imperio de chats!</p>
-                </div>
-            </div>
-
-            <div id="emoji-sticker-panel" class="bg-imperialCard border-t border-imperialBorder p-2.5 hidden grid grid-cols-5 gap-2 text-center text-lg">
-                <span onclick="sendItemContent('🔥', 'emoji')" class="cursor-pointer">🔥</span>
-                <span onclick="sendItemContent('👑', 'emoji')" class="cursor-pointer">👑</span>
-                <span onclick="sendItemContent('💎', 'emoji')" class="cursor-pointer">💎</span>
-                <span onclick="sendItemContent('🥳', 'emoji')" class="cursor-pointer">🥳</span>
-                <span onclick="sendItemContent('🚀', 'emoji')" class="cursor-pointer">🚀</span>
+            <div id="emoji-sticker-panel" class="bg-imperialCard border-t border-imperialBorder p-2 hidden grid grid-cols-5 gap-2 text-center text-lg">
+                <span onclick="sendEmoji('🔥')" class="cursor-pointer">🔥</span>
+                <span onclick="sendEmoji('👑')" class="cursor-pointer">👑</span>
+                <span onclick="sendEmoji('💎')" class="cursor-pointer">💎</span>
+                <span onclick="sendEmoji('🥳')" class="cursor-pointer">🥳</span>
+                <span onclick="sendEmoji('🚀')" class="cursor-pointer">🚀</span>
             </div>
 
             <div class="p-2.5 bg-imperialCard border-t border-imperialBorder flex items-center gap-1.5">
                 <button onclick="toggleEmojiPanel()" class="text-slate-400 hover:text-neonGold p-1.5 text-base"><i class="fa-solid fa-face-smile"></i></button>
-                <input type="text" id="chat-input" placeholder="Mensaje anónimo..." class="flex-1 bg-imperialDark px-3 py-2 rounded-xl border border-imperialBorder text-xs text-white">
+                <input type="text" id="chat-input" placeholder="Escribe tu mensaje en tiempo real..." class="flex-1 bg-imperialDark px-3 py-2 rounded-xl border border-imperialBorder text-xs text-white">
                 <button onclick="sendChatMessage()" class="px-3.5 bg-gradient-logo text-imperialDark font-bold rounded-xl text-xs py-2">Enviar</button>
             </div>
         </div>
@@ -293,10 +274,10 @@
         <!-- MODAL CREAR SALA -->
         <div id="create-room-modal" class="absolute inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
             <div class="bg-imperialCard border border-imperialBorder rounded-2xl w-full p-4 space-y-3">
-                <h3 class="font-bold text-white text-xs">Fundar Nuevo Bazar (Sala)</h3>
+                <h3 class="font-bold text-white text-xs">Fundar Nueva Sala</h3>
                 <input type="text" id="new-room-name" placeholder="Nombre de tu sala..." class="w-full bg-imperialDark px-3 py-2.5 rounded-2xl border border-imperialBorder text-xs text-white">
                 <div class="flex gap-2">
-                    <button onclick="closeCreateRoomModal()" class="flex-1 py-2 bg-imperialDark text-slate-300 rounded-xl text-xs font-bold border border-imperialBorder">Cancelar</button>
+                    <button onclick="closeCreateRoomModal()" class="flex-1 py-2 bg-imperialDark text-slate-300 rounded-xl text-xs font-bold">Cancelar</button>
                     <button onclick="submitCreateRoom()" class="flex-1 py-2 bg-gradient-logo text-imperialDark rounded-xl text-xs font-bold">Fundar</button>
                 </div>
             </div>
@@ -305,291 +286,211 @@
     </div>
 
     <script>
-        let currentUser = { name: "Plebeyo", role: "Plebeyo", karma: 1000, roomsCreated: 1, isVip: false, avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" };
+        let currentUser = { name: "Plebeyo", role: "Plebeyo", karma: 1000, avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" };
         let isRegisterMode = false;
+        let currentRoomId = null;
+        let chatMessagesStore = {};
+
+        // Configuración PWA / Instalación Móvil
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-pwa-btn').classList.remove('hidden');
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('App instalada');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                alert("Si el botón directo no responde en tu navegador, usa la opción del menú de Chrome: 'Crear acceso directo' o 'Agregar a la pantalla de inicio'.");
+            }
+        }
 
         function switchAuthMode(mode) {
             isRegisterMode = (mode === 'register');
-            const btnLogin = document.getElementById('auth-tab-login');
-            const btnRegister = document.getElementById('auth-tab-register');
-            const regFields = document.getElementById('register-fields');
-            const submitBtn = document.getElementById('auth-submit-btn');
-
-            if(isRegisterMode) {
-                btnRegister.className = "flex-1 py-1.5 text-[11px] font-bold rounded-lg bg-neonCyan text-imperialDark transition";
-                btnLogin.className = "flex-1 py-1.5 text-[11px] font-bold rounded-lg text-slate-400 transition";
-                regFields.classList.remove('hidden');
-                submitBtn.textContent = "Registrarse y Entrar";
-            } else {
-                btnLogin.className = "flex-1 py-1.5 text-[11px] font-bold rounded-lg bg-neonCyan text-imperialDark transition";
-                btnRegister.className = "flex-1 py-1.5 text-[11px] font-bold rounded-lg text-slate-400 transition";
-                regFields.classList.add('hidden');
-                submitBtn.textContent = "Entrar al Imperio";
-            }
+            document.getElementById('auth-tab-login').className = isRegisterMode ? "flex-1 py-1.5 text-[11px] font-bold rounded-lg text-slate-400 transition" : "flex-1 py-1.5 text-[11px] font-bold rounded-lg bg-neonCyan text-imperialDark transition";
+            document.getElementById('auth-tab-register').className = isRegisterMode ? "flex-1 py-1.5 text-[11px] font-bold rounded-lg bg-neonCyan text-imperialDark transition" : "flex-1 py-1.5 text-[11px] font-bold rounded-lg text-slate-400 transition";
+            document.getElementById('register-fields').classList.toggle('hidden', !isRegisterMode);
+            document.getElementById('auth-submit-btn').textContent = isRegisterMode ? "Registrarse y Entrar" : "Entrar al Imperio";
         }
 
         function validateAndLogin() {
             const userField = document.getElementById('auth-username').value.trim();
             const passField = document.getElementById('auth-password').value.trim();
-            const regNameField = document.getElementById('reg-name').value.trim();
+            const regName = document.getElementById('reg-name').value.trim();
             const keyVal = document.getElementById('sultan-key-input').value.trim();
 
             if(!userField || !passField) {
-                alert("Acceso denegado: Debes ingresar tu usuario/Gmail y tu contraseña para ingresar.");
+                alert("Acceso denegado: Debes ingresar tu usuario/Gmail y tu contraseña.");
                 return;
             }
 
-            if(isRegisterMode && !regNameField) {
-                alert("Por favor ingresa tu nombre o alias para completar el registro.");
+            if(isRegisterMode && !regName) {
+                alert("Por favor ingresa tu nombre de usuario.");
                 return;
             }
 
-            // Validar si es Gmail o usuario válido
-            if(userField.includes('@')) {
-                if(!userField.endsWith('@gmail.com') && !userField.includes('@')) {
-                    alert("Por favor introduce una dirección de correo Gmail válida.");
-                    return;
-                }
-                currentUser.name = userField.split('@')[0];
-            } else {
-                currentUser.name = isRegisterMode ? regNameField : userField;
+            currentUser.name = isRegisterMode ? regName : (userField.includes('@') ? userField.split('@')[0] : userField);
+
+            if(keyVal === "Imperio#Sultan99$" || userField.toLowerCase() === 'sultán') {
+                currentUser.role = 'Sultán';
+                currentUser.karma = 999999;
+                alert("¡Bienvenido, Gran Sultán!");
             }
 
-            // Comprobar Clave de Sultán
-            if(userField.toLowerCase() === 'sultán' || userField.toLowerCase() === 'sultan' || keyVal === "Imperio#Sultan99$") {
-                if(keyVal === "Imperio#Sultan99$") {
-                    currentUser.role = 'Sultán';
-                    currentUser.isVip = true;
-                    currentUser.karma = 999999;
-                    alert("¡Bienvenido, Gran Sultán! Acceso supremo concedido.");
-                } else {
-                    alert("Clave de Sultán incorrecta, ingresando con credenciales regulares.");
-                }
-            } else {
-                alert(isRegisterMode ? "¡Registro exitoso! Bienvenido al Imperio." : "¡Inicio de sesión exitoso!");
-            }
-
-            initAppSession();
-        }
-
-        function loginWithGoogleAuth() {
-            let email = prompt("Introduce tu cuenta de Gmail para acceder (ejemplo: usuario@gmail.com):");
-            if(!email || !email.includes('@gmail.com')) {
-                alert("Autenticación con Google cancelada o correo no válido. Acceso denegado.");
-                return;
-            }
-            currentUser.name = email.split('@')[0];
-            alert(`¡Autenticación exitosa con Google (${email})!`);
             initAppSession();
         }
 
         function initAppSession() {
             document.getElementById('header-username').textContent = currentUser.name;
-            document.getElementById('header-role').textContent = `${currentUser.role} • Nivel 1`;
+            document.getElementById('header-role').textContent = `${currentUser.role} • En Línea`;
             document.getElementById('header-karma').textContent = currentUser.karma;
-            
-            if(currentUser.role === 'Sultán') {
-                document.getElementById('sultan-vault-admin').classList.remove('hidden');
-                document.getElementById('sultan-store-admin').classList.remove('hidden');
-            }
-
             document.getElementById('header-avatar').innerHTML = `<img src="${currentUser.avatar}" class="w-full h-full object-cover" alt="Avatar">`;
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
 
             filterRooms('provinces');
             renderVault();
-            renderStore();
         }
 
-        let vaultItems = [
-            { id: 1, name: "Sultán Imperial", type: "avatar", price: 0, tag: "Gratis", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" },
-            { id: 2, name: "La Mercader", type: "avatar", price: 500, tag: "500K Karma", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" },
-            { id: 3, name: "El Visir", type: "avatar", price: 500, tag: "500K Karma", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" },
-            { id: 4, name: "La Nómada", type: "avatar", price: 500, tag: "500K Karma", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" },
-            { id: 5, name: "Pack Stickers Realeza", type: "sticker", price: 300, tag: "300K Karma", image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=80" }
-        ];
-        let storeItems = [{ id: 1, name: "Pase de Estación (VIP Mensual)", price: "$9.99", desc: "Poder de poner música, chats ilimitados y Salas Supremas." }];
-        const countriesList = ["Venezuela", "España", "México", "Argentina", "Colombia", "Estados Unidos", "Japón", "Brasil", "Chile", "Perú", "Francia", "Italia", "Alemania", "Reino Unido", "Canadá"];
-        const vipRoomsList = [
-            { id: 'vip1', name: "👑 El Diván del Consejo Dorado", type: "vip", desc: "Videollamadas de la alta élite con música exclusiva." },
-            { id: 'vip2', name: "🌸 Los Jardines Colgantes de Babilonia", type: "vip", desc: "Salas de audio en vivo / formato podcast." },
-            { id: 'vip3', name: "🗡️ El Santuario del Visir", type: "vip", desc: "Cámara privada de llamadas y debates seguros." }
-        ];
-        let userRoomsList = [{ id: 'usr1', name: "Café Nocturno de Almas", type: "user", creator: "Plebeyo" }];
-
-        function switchTab(tabId) {
-            ['bazaar', 'vault', 'dungeon', 'store'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                const btn = document.getElementById(`nav-btn-${t}`);
-                if(btn) btn.classList.replace('text-neonCyan', 'text-slate-400');
-            });
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`nav-btn-${tabId}`);
-            if(activeBtn) activeBtn.classList.replace('text-slate-400', 'text-neonCyan');
-        }
+        const countriesList = ["Venezuela", "España", "México", "Argentina", "Colombia", "Estados Unidos", "Japón", "Brasil", "Chile", "Perú"];
+        let userRoomsList = [{ id: 'usr1', name: "Café Nocturno de Almas", creator: "Plebeyo" }];
 
         function filterRooms(type) {
             const container = document.getElementById('rooms-grid');
             container.innerHTML = '';
             if(type === 'provinces') {
-                container.innerHTML += `
-                    <div onclick="openRoom('🎵 La Meskita Zona de Arte', true, true)" class="bg-imperialCard border border-neonGold p-3.5 rounded-xl cursor-pointer glow-gold flex justify-between items-center mb-2">
-                        <div>
-                            <h4 class="font-bold text-neonGold text-xs">🎵 La Meskita Zona de Arte</h4>
-                            <p class="text-[9px] text-slate-300 mt-0.5">Sala de música pública del Sultán.</p>
-                        </div>
-                        <span class="text-[9px] bg-yellow-950 text-neonGold px-2.5 py-1 rounded-full border border-yellow-700 font-bold"><i class="fa-solid fa-music"></i> MÚSICA</span>
-                    </div>`;
                 countriesList.forEach(c => {
                     container.innerHTML += `
-                        <div onclick="openRoom('${c} (Provincia)', false)" class="bg-imperialCard border border-imperialBorder p-3 rounded-xl cursor-pointer hover:border-neonCyan transition flex justify-between items-center">
-                            <div><h4 class="font-bold text-white text-xs">Sala de ${c}</h4><span class="text-[9px] text-slate-400">Provincia oficial</span></div>
-                            <span class="text-[9px] bg-cyan-950 text-neonCyan px-2 py-0.5 rounded-full border border-cyan-800">142 en línea</span>
+                        <div onclick="openRoom('room_${c}', 'Sala de ${c}')" class="bg-imperialCard border border-imperialBorder p-3 rounded-xl cursor-pointer hover:border-neonCyan transition flex justify-between items-center">
+                            <div><h4 class="font-bold text-white text-xs">Sala de ${c}</h4><span class="text-[9px] text-neonCyan">Activo en tiempo real</span></div>
+                            <span class="text-[9px] bg-cyan-950 text-neonCyan px-2 py-0.5 rounded-full border border-cyan-800">Conectar</span>
                         </div>`;
                 });
             } else if(type === 'vip') {
-                vipRoomsList.forEach(v => {
-                    container.innerHTML += `
-                        <div onclick="openRoom('${v.name}', true)" class="bg-imperialCard border border-neonGold p-3 rounded-xl cursor-pointer glow-gold flex justify-between items-center">
-                            <div><h4 class="font-bold text-neonGold text-xs">${v.name}</h4><p class="text-[9px] text-slate-300 mt-0.5">${v.desc}</p></div>
-                            <span class="text-[9px] bg-yellow-950 text-neonGold px-2 py-0.5 rounded-full border border-yellow-700 font-bold"><i class="fa-solid fa-crown"></i> VIP</span>
-                        </div>`;
-                });
+                container.innerHTML += `
+                    <div onclick="openRoom('room_vip1', '👑 El Diván Dorado')" class="bg-imperialCard border border-neonGold p-3 rounded-xl cursor-pointer glow-gold flex justify-between items-center">
+                        <div><h4 class="font-bold text-neonGold text-xs">👑 El Diván Dorado</h4><span class="text-[9px] text-slate-300">Sala de élite</span></div>
+                        <span class="text-[9px] bg-yellow-950 text-neonGold px-2 py-0.5 rounded-full border border-yellow-700 font-bold">VIP</span>
+                    </div>`;
             } else if(type === 'users') {
                 userRoomsList.forEach(u => {
                     container.innerHTML += `
-                        <div onclick="openRoom('${u.name}', false)" class="bg-imperialCard border border-imperialBorder p-3 rounded-xl cursor-pointer hover:border-neonCyan transition flex justify-between items-center">
+                        <div onclick="openRoom('${u.id}', '${u.name}')" class="bg-imperialCard border border-imperialBorder p-3 rounded-xl cursor-pointer hover:border-neonCyan transition flex justify-between items-center">
                             <div><h4 class="font-bold text-white text-xs">${u.name}</h4><span class="text-[9px] text-slate-400">Creador: ${u.creator}</span></div>
-                            <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">Bazar</span>
+                            <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">Entrar</span>
                         </div>`;
                 });
             }
         }
 
-        function openRoom(roomName, isVipOrMusic, isMusicRoom = false) {
+        function openRoom(roomId, roomName) {
+            currentRoomId = roomId;
             document.getElementById('modal-room-title').textContent = roomName;
             document.getElementById('room-modal').classList.remove('hidden');
-            const audioPanel = document.getElementById('vip-audio-panel');
-            if(isVipOrMusic || currentUser.isVip) {
-                audioPanel.classList.remove('hidden');
-            } else {
-                audioPanel.classList.add('hidden');
-            }
+            renderRoomMessages();
         }
 
-        function closeRoomModal() { document.getElementById('room-modal').classList.add('hidden'); }
+        function closeRoomModal() {
+            document.getElementById('room-modal').classList.add('hidden');
+            currentRoomId = null;
+        }
+
         function sendChatMessage() {
             const input = document.getElementById('chat-input');
-            if(!input.value.trim()) return;
-            const container = document.getElementById('room-messages');
-            container.innerHTML += `<div class="bg-imperialCard/80 border border-imperialBorder p-2.5 rounded-xl max-w-[85%] ml-auto"><span class="text-[9px] text-neonGold font-bold">${currentUser.name}</span><p class="text-xs text-white mt-0.5">${input.value}</p></div>`;
+            const text = input.value.trim();
+            if(!text || !currentRoomId) return;
+
+            if(!chatMessagesStore[currentRoomId]) chatMessagesStore[currentRoomId] = [];
+            
+            chatMessagesStore[currentRoomId].push({
+                sender: currentUser.name,
+                text: text,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+
             input.value = '';
+            renderRoomMessages();
+        }
+
+        function renderRoomMessages() {
+            const container = document.getElementById('room-messages');
+            container.innerHTML = '';
+            const messages = chatMessagesStore[currentRoomId] || [];
+
+            if(messages.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-500 text-xs py-10">Sé el primero en iniciar la conversación en tiempo real...</div>`;
+                return;
+            }
+
+            messages.forEach(msg => {
+                const isMe = msg.sender === currentUser.name;
+                container.innerHTML += `
+                    <div class="bg-imperialCard/90 border border-imperialBorder p-2.5 rounded-xl max-w-[85%] ${isMe ? 'ml-auto border-neonCyan/30' : ''}">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[9px] ${isMe ? 'text-neonCyan' : 'text-neonGold'} font-bold">${msg.sender}</span>
+                            <span class="text-[8px] text-slate-500">${msg.time}</span>
+                        </div>
+                        <p class="text-xs text-white">${msg.text}</p>
+                    </div>`;
+            });
             container.scrollTop = container.scrollHeight;
         }
+
+        let vaultItems = [
+            { id: 1, name: "Sultán Imperial", type: "avatar", price: 0, tag: "Gratis", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" },
+            { id: 2, name: "La Mercader", type: "avatar", price: 500, tag: "500K", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" }
+        ];
 
         function renderVault() {
             const vaultContainer = document.getElementById('vault-sections');
             let itemsHtml = `<div class="grid grid-cols-2 gap-3">`;
             vaultItems.forEach(item => {
                 itemsHtml += `
-                    <div class="bg-imperialCard border border-imperialBorder p-3 rounded-2xl flex flex-col items-center text-center space-y-2 relative shadow-md">
-                        <div class="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded-full text-[9px] text-neonGold font-black">${item.tag}</div>
-                        <img src="${item.image}" class="w-16 h-16 rounded-full object-cover border-2 border-neonCyan mt-1" alt="Avatar">
-                        <div><h5 class="text-xs font-bold text-white">${item.name}</h5><span class="text-[8px] text-slate-400 uppercase">${item.type}</span></div>
-                        <button onclick="acquireVaultItem(${item.price}, '${item.name}', '${item.image}')" class="w-full py-1.5 bg-gradient-logo text-imperialDark rounded-xl text-[10px] font-black shadow">Elegir Avatar</button>
+                    <div class="bg-imperialCard border border-imperialBorder p-3 rounded-2xl flex flex-col items-center text-center space-y-2 relative">
+                        <img src="${item.image}" class="w-16 h-16 rounded-full object-cover border-2 border-neonCyan" alt="Avatar">
+                        <h5 class="text-xs font-bold text-white">${item.name}</h5>
+                        <button onclick="setAvatar('${item.image}')" class="w-full py-1.5 bg-gradient-logo text-imperialDark rounded-xl text-[10px] font-black">Usar</button>
                     </div>`;
             });
             itemsHtml += `</div>`;
             vaultContainer.innerHTML = itemsHtml;
         }
 
-        function acquireVaultItem(price, itemName, itemImage) {
-            if(currentUser.karma < price) { alert("No tienes suficiente Karma."); return; }
-            currentUser.karma -= price;
-            document.getElementById('header-karma').textContent = currentUser.karma;
-            currentUser.avatar = itemImage;
-            document.getElementById('header-avatar').innerHTML = `<img src="${itemImage}" class="w-full h-full object-cover" alt="Avatar">`;
-            alert(`¡Has equipado "${itemName}"!`);
-            switchTab('bazaar');
+        function setAvatar(imgUrl) {
+            currentUser.avatar = imgUrl;
+            document.getElementById('header-avatar').innerHTML = `<img src="${imgUrl}" class="w-full h-full object-cover">`;
+            alert("¡Avatar actualizado con éxito!");
         }
 
-        function sultanAddVaultItem() {
-            if(currentUser.role !== 'Sultán') { alert("Acceso denegado."); return; }
-            const name = document.getElementById('vault-item-name').value.trim();
-            const price = parseInt(document.getElementById('vault-item-price').value) || 0;
-            const type = document.getElementById('vault-item-type').value;
-            const fileInput = document.getElementById('vault-item-file');
-            if(!name) { alert("Ingresa un nombre."); return; }
-            let imageUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80";
-            if(fileInput.files && fileInput.files[0]) imageUrl = URL.createObjectURL(fileInput.files[0]);
-            vaultItems.push({ id: Date.now(), name, type, price, tag: price === 0 ? "Gratis" : `${price}K Karma`, image: imageUrl });
-            renderVault();
-            alert(`¡"${name}" publicado con éxito!`);
-        }
-
-        function renderStore() {
-            const container = document.getElementById('store-items-container');
-            let html = '';
-            storeItems.forEach(s => {
-                html += `
-                    <div class="bg-imperialCard border border-neonGold rounded-2xl p-4 space-y-2.5 glow-gold">
-                        <div class="flex justify-between items-center">
-                            <div><h4 class="font-bold text-white text-xs">${s.name}</h4><p class="text-[9px] text-slate-400">${s.desc}</p></div>
-                            <span class="text-neonGold font-black text-base">${s.price}</span>
-                        </div>
-                        <button onclick="buyWithPayPal('${s.name}')" class="w-full py-2.5 bg-[#0070BA] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2">
-                            <i class="fa-brands fa-paypal"></i> Comprar con PayPal
-                        </button>
-                    </div>`;
+        function switchTab(tabId) {
+            ['bazaar', 'vault', 'dungeon', 'store'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
             });
-            container.innerHTML = html;
-        }
-
-        function sultanAddStoreItem() {
-            if(currentUser.role !== 'Sultán') return;
-            const name = document.getElementById('store-item-name').value.trim();
-            const price = document.getElementById('store-item-price').value.trim();
-            if(!name || !price) return;
-            storeItems.push({ id: Date.now(), name, price, desc: "Artículo exclusivo del Sultán." });
-            renderStore();
-            alert("Artículo agregado.");
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
         }
 
         function openCreateRoomModal() { document.getElementById('create-room-modal').classList.remove('hidden'); }
         function closeCreateRoomModal() { document.getElementById('create-room-modal').classList.add('hidden'); }
         function submitCreateRoom() {
-            const roomName = document.getElementById('new-room-name').value.trim();
-            if(!roomName) return;
-            userRoomsList.push({ id: 'usr'+Date.now(), name: roomName, type: 'user', creator: currentUser.name });
+            const name = document.getElementById('new-room-name').value.trim();
+            if(!name) return;
+            userRoomsList.push({ id: 'usr_'+Date.now(), name, creator: currentUser.name });
             closeCreateRoomModal();
             filterRooms('users');
-            alert("¡Sala fundada con éxito!");
+            alert("¡Sala fundada!");
         }
-
-        function buyWithPayPal(item) {
-            alert(`Pago exitoso de ${item} vía PayPal.`);
-            currentUser.karma += 500000;
-            currentUser.isVip = true;
-            currentUser.role = 'VIP Supremacía';
-            document.getElementById('header-karma').textContent = currentUser.karma;
-            document.getElementById('header-role').textContent = 'VIP • Ilimitado';
-            switchTab('bazaar');
-        }
-
-        function payDungeonFine() { alert("Fianza pagada vía PayPal."); switchTab('bazaar'); }
-        function sendDungeonMsg() {
-            const input = document.getElementById('dungeon-msg');
-            if(!input.value.trim()) return;
-            document.getElementById('dungeon-chat-logs').innerHTML += `<div class="bg-black/30 p-1.5 rounded text-white"><span class="text-red-400 font-bold">${currentUser.name}:</span> ${input.value}</div>`;
-            input.value = '';
-        }
-        function toggleAudioStream() { alert("Estado de audio alternado."); }
+        function buyWithPayPal(item) { alert(`Pago exitoso de ${item}`); }
+        function payDungeonFine() { alert("Fianza pagada."); switchTab('bazaar'); }
         function toggleEmojiPanel() { document.getElementById('emoji-sticker-panel').classList.toggle('hidden'); }
-        function sendItemContent(emoji) {
-            document.getElementById('chat-input').value += emoji;
-            document.getElementById('emoji-sticker-panel').classList.add('hidden');
-        }
+        function sendEmoji(emoji) { document.getElementById('chat-input').value += emoji; }
     </script>
 </body>
 </html>
