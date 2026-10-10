@@ -1,365 +1,1598 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Éter Chat & Red Social</title>
-  
-  <!-- Configuración PWA para instalación móvil -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#090d16">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-  
-  <style>
-    body { 
-      font-family: 'Nunito', sans-serif; 
-      background-color: #090d16; 
-      color: #f8fafc; 
-      touch-action: manipulation; 
-      -webkit-tap-highlight-color: transparent;
-    }
-    h1, h2, h3, .font-heading { font-family: 'Fredoka', sans-serif; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OlimPUSchAT</title>
+    <!-- FontAwesome y Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
     
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #8b5cf6; border-radius: 9999px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    <!-- Firebase SDK (v8 para compatibilidad web directa) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 0.8; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.05); }
-    }
-    .glow-effect { animation: pulseGlow 3s infinite ease-in-out; }
-  </style>
+    <style>
+        :root {
+            --neon-gold: #FFD700;
+            --neon-purple: #B829EA;
+            --electric-cyan: #00F0FF;
+            --bg-dark: #070510;
+            --card-bg: rgba(25, 18, 45, 0.85);
+            --card-border: rgba(184, 41, 234, 0.35);
+            --text-main: #FFFFFF;
+            --text-muted: #A39BBC;
+            --danger: #FF3B30;
+            --success: #00FF87;
+            --binance-yellow: #F0B90B;
+            --paypal-blue: #0070BA;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #030208;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Frame Celular */
+        .phone-frame {
+            width: 100%;
+            max-width: 412px;
+            height: 100vh;
+            max-height: 870px;
+            background-color: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            border-radius: 42px;
+            box-shadow: 0 0 50px rgba(184, 41, 234, 0.35), 0 0 20px rgba(0, 240, 255, 0.25);
+            border: 3px solid rgba(184, 41, 234, 0.5);
+        }
+
+        .notch {
+            width: 125px;
+            height: 26px;
+            background-color: #000;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 999;
+        }
+
+        /* Header */
+        .mobile-header {
+            padding: 38px 18px 14px 18px;
+            background: linear-gradient(180deg, #120924 0%, var(--bg-dark) 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            z-index: 10;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-box {
+            position: relative;
+            font-size: 1.6rem;
+            color: var(--electric-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 0 8px var(--electric-cyan));
+        }
+
+        .logo-box .fa-crown {
+            position: absolute;
+            top: -10px;
+            font-size: 1rem;
+            color: var(--neon-gold);
+            filter: drop-shadow(0 0 10px var(--neon-gold));
+        }
+
+        .brand-name {
+            font-size: 1.15rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--neon-gold), var(--neon-purple), var(--electric-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-badge {
+            font-size: 0.7rem;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--electric-cyan);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--electric-cyan);
+            font-weight: 800;
+        }
+
+        /* Área de Contenido */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 85px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Pestañas Auth */
+        .auth-tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 4px;
+            margin-bottom: 18px;
+            border: 1px solid var(--card-border);
+        }
+
+        .auth-tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 800;
+            font-size: 0.8rem;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab-btn.active {
+            background: linear-gradient(135deg, var(--neon-purple), var(--electric-cyan));
+            color: #FFF;
+            box-shadow: 0 0 12px rgba(184, 41, 234, 0.4);
+        }
+
+        .btn-google {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--card-border);
+            color: #FFF;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .divider {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin: 10px 0 15px 0;
+        }
+
+        /* Controles y Formularios */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .form-control {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 14px;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 0.88rem;
+            outline: none;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-purple), var(--electric-cyan));
+            color: #FFF;
+            font-weight: 900;
+            padding: 15px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            box-shadow: 0 0 18px rgba(184, 41, 234, 0.4);
+            width: 100%;
+        }
+
+        .btn-paypal {
+            background: linear-gradient(135deg, #0070BA, #1546A0);
+            color: #FFF;
+            font-weight: 800;
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 112, 186, 0.4);
+            width: 100%;
+        }
+
+        .btn-binance {
+            background: linear-gradient(135deg, #F0B90B, #D49B00);
+            color: #000;
+            font-weight: 800;
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(240, 185, 11, 0.4);
+            width: 100%;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--electric-cyan);
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px dashed var(--electric-cyan);
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-align: center;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Avatares */
+        .avatar-picker {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 5px 0 10px 0;
+        }
+
+        .avatar-item-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .avatar-img {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 2px solid var(--card-border);
+            opacity: 0.6;
+            cursor: pointer;
+            background: var(--card-bg);
+            object-fit: cover;
+        }
+
+        .avatar-img.selected {
+            border-color: var(--electric-cyan);
+            opacity: 1;
+            box-shadow: 0 0 14px var(--electric-cyan);
+        }
+
+        .buy-mini-btn {
+            background: var(--neon-gold);
+            color: #000;
+            border: none;
+            font-size: 0.6rem;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Tarjetas de Salas */
+        .room-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .room-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+        }
+
+        .room-card.dungeon-card {
+            border-color: var(--danger);
+            background: rgba(255, 59, 48, 0.12);
+        }
+
+        .room-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flag-icon {
+            font-size: 1.7rem;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--card-border);
+        }
+
+        .room-details h4 {
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .room-details p {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .room-badge {
+            font-size: 0.68rem;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-weight: 800;
+        }
+
+        .badge-live { background: rgba(0, 255, 135, 0.15); color: var(--success); border: 1px solid var(--success); }
+        .badge-special { background: rgba(255, 215, 0, 0.15); color: var(--neon-gold); border: 1px solid var(--neon-gold); }
+        .badge-danger { background: rgba(255, 59, 48, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .badge-vip { background: rgba(184, 41, 234, 0.2); color: var(--neon-purple); border: 1px solid var(--neon-purple); }
+
+        /* Categorías / Continentes */
+        .category-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+        .category-scroll::-webkit-scrollbar { display: none; }
+
+        .chip {
+            background: var(--card-bg);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .chip.active {
+            background: linear-gradient(135deg, var(--neon-purple), var(--electric-cyan));
+            color: #FFF;
+            border-color: transparent;
+        }
+
+        /* Chat */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 15px;
+        }
+
+        .bubble {
+            max-width: 82%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .bubble.incoming {
+            background: var(--card-bg);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--card-border);
+        }
+
+        .bubble.outgoing {
+            background: linear-gradient(135deg, var(--neon-purple), var(--electric-cyan));
+            color: #FFF;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bubble .sender {
+            font-size: 0.7rem;
+            font-weight: 800;
+            margin-bottom: 3px;
+            display: block;
+            color: var(--neon-gold);
+        }
+
+        .bubble img.chat-image-content {
+            width: 100%;
+            max-width: 200px;
+            border-radius: 12px;
+            margin-top: 5px;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--card-bg);
+            padding: 10px 14px;
+            border-radius: 25px;
+            border: 1px solid var(--card-border);
+        }
+
+        .chat-tools-bar {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            font-size: 1.2rem;
+            color: var(--electric-cyan);
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-tool-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .chat-tool-btn:active {
+            transform: scale(0.9);
+        }
+
+        .chat-tool-btn.vip-active {
+            color: var(--neon-gold);
+            text-shadow: 0 0 10px var(--neon-gold);
+        }
+
+        .chat-input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-input-row input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            outline: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Emojis & Stickers */
+        .emoji-picker-box {
+            position: absolute;
+            bottom: 75px;
+            left: 10px;
+            right: 10px;
+            background: #150d2e;
+            border: 2px solid var(--card-border);
+            border-radius: 20px;
+            padding: 12px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 200;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.8);
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .emoji-grid span { cursor: pointer; transition: transform 0.2s; }
+        .emoji-grid span:hover { transform: scale(1.2); }
+
+        .stickers-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-top: 8px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .sticker-card-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .sticker-item {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            cursor: pointer;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            padding: 4px;
+        }
+
+        /* Bóveda Panel */
+        .vault-box {
+            background: var(--card-bg);
+            border: 1px solid var(--neon-gold);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        .vault-title {
+            color: var(--neon-gold);
+            font-size: 1rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        /* Modales */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(10px);
+            z-index: 500;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background: var(--bg-dark);
+            border: 2px solid var(--card-border);
+            border-radius: 25px;
+            padding: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Navegación Inferior */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            background: rgba(18, 9, 36, 0.95);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--card-border);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        .nav-item i { font-size: 1.3rem; }
+        .nav-item.active { color: var(--electric-cyan); }
+    </style>
 </head>
-<body class="w-screen h-screen overflow-hidden flex flex-col bg-slate-950 text-slate-100 select-none">
+<body>
 
-  <!-- PANTALLA DE AUTENTICACIÓN -->
-  <div id="authScreen" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-50 flex flex-col justify-center p-5 transition-all duration-300">
-    <div class="bg-slate-900/90 border border-purple-500/30 rounded-3xl w-full max-w-sm mx-auto p-6 shadow-2xl shadow-purple-950/50">
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-400 flex items-center justify-center text-white font-bold text-3xl mx-auto mb-3 shadow-lg shadow-purple-500/30 glow-effect">
-          ✨
+<div class="phone-frame">
+    <div class="notch"></div>
+
+    <!-- Header -->
+    <div class="mobile-header">
+        <div class="brand-logo">
+            <div class="logo-box">
+                <i class="fa-solid fa-comment-dots"></i>
+                <i class="fa-solid fa-crown"></i>
+            </div>
+            <span class="brand-name">OlimPUSchAT</span>
         </div>
-        <h2 class="font-heading text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-300 to-amber-300 bg-clip-text text-transparent">Éter Social</h2>
-        <p class="text-xs text-slate-400 mt-1">El chat místico y red social de los dioses</p>
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-[10px] font-semibold text-purple-300/80 mb-1.5 uppercase tracking-wider">
-          <i class="fa-solid fa-globe mr-1"></i> Idioma / Language:
-        </label>
-        <select id="globalLanguage" class="w-full bg-slate-950 border border-slate-800 text-xs rounded-xl p-3 text-slate-200 focus:outline-none focus:border-purple-500">
-          <option value="es">Español (ES)</option>
-          <option value="en">English (US)</option>
-        </select>
-      </div>
-
-      <div class="space-y-3">
-        <div>
-          <label class="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">Correo Electrónico</label>
-          <div class="relative">
-            <span class="absolute left-3.5 top-3 text-slate-500 text-xs"><i class="fa-solid fa-envelope"></i></span>
-            <input type="email" id="authEmail" placeholder="tudios@eter.com" value="zeus@eter.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-purple-500 transition">
-          </div>
+        <div class="user-badge" id="headerUserBadge">
+            <i class="fa-solid fa-lock"></i> No Autenticado
         </div>
-        <div>
-          <label class="block text-[10px] font-semibold text-slate-400 mb-1 uppercase tracking-wider">Contraseña</label>
-          <div class="relative">
-            <span class="absolute left-3.5 top-3 text-slate-500 text-xs"><i class="fa-solid fa-lock"></i></span>
-            <input type="password" id="authPassword" placeholder="••••••••" value="123456" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-purple-500 transition">
-          </div>
-        </div>
-
-        <button onclick="handleAuth()" class="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-slate-950 font-bold py-3 rounded-xl text-xs shadow-lg shadow-purple-500/20 transition active:scale-[0.98] mt-2">
-          Ingresar a Éter
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- APLICACIÓN MÓVIL PRINCIPAL -->
-  <div id="mainApp" class="flex-1 flex flex-col hidden w-full h-full overflow-hidden relative">
-    
-    <!-- TOP HEADER MÓVIL -->
-    <header class="h-14 bg-slate-900/90 border-b border-slate-800/80 px-3 flex items-center justify-between shrink-0 z-20 backdrop-blur-md">
-      <div class="flex items-center gap-2.5">
-        <button onclick="toggleRoomsDrawer()" class="w-9 h-9 rounded-xl bg-slate-800/80 text-purple-400 flex items-center justify-center active:scale-95 transition border border-purple-500/20">
-          <i class="fa-solid fa-bars text-sm"></i>
-        </button>
-        <div>
-          <h1 class="font-heading text-sm font-bold text-purple-200 leading-tight flex items-center gap-1.5" id="currentRoomTitle">
-            Hogar Éter
-          </h1>
-          <p class="text-[10px] text-emerald-400 flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> 
-            <span id="roomStatusText">142 Dioses Online</span>
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <!-- BOTÓN DESCARGAR APP MÓVIL -->
-        <button onclick="downloadApp()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold px-2.5 py-1 rounded-full text-[10px] flex items-center gap-1 shadow-md active:scale-95 transition">
-          <i class="fa-solid fa-download"></i>
-          <span>App Móvil</span>
-        </button>
-
-        <div class="bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-full flex items-center gap-1">
-          <i class="fa-solid fa-star text-amber-400 text-[10px]"></i>
-          <span class="text-xs font-bold text-amber-300" id="userKarma">1,250</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- DRAWER DE SALAS Y MENÚ -->
-    <div id="roomsDrawerOverlay" onclick="toggleRoomsDrawer()" class="fixed inset-0 bg-slate-950/70 z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
-    
-    <div id="roomsDrawer" class="fixed inset-y-0 left-0 w-72 bg-slate-900/95 border-r border-purple-500/20 z-40 transform -translate-x-full transition-transform duration-300 flex flex-col shadow-2xl backdrop-blur-xl">
-      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="text-lg">✨</span>
-          <h3 class="font-heading text-sm font-bold text-purple-300">Salas de Éter</h3>
-        </div>
-        <button onclick="toggleRoomsDrawer()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="p-3 border-b border-slate-800">
-        <button onclick="downloadApp()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow">
-          <i class="fa-solid fa-mobile-screen-button"></i> Instalar / Descargar App
-        </button>
-      </div>
-
-      <!-- LISTA DE SALAS -->
-      <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
-        <button onclick="selectRoom('general', 'Hogar Éter', '142 Dioses Online')" class="w-full text-left p-2.5 rounded-2xl flex items-center gap-3 bg-purple-500/15 border border-purple-500/30 text-purple-200 text-xs">
-          <span class="w-8 h-8 rounded-xl bg-purple-600/30 flex items-center justify-center text-base shrink-0">🏛️</span>
-          <div>
-            <p class="font-bold">Hogar Éter</p>
-            <p class="text-[10px] text-purple-300/70">Sala Principal</p>
-          </div>
-        </button>
-      </div>
     </div>
 
-    <!-- ÁREA DE CONTENIDO PRINCIPAL -->
-    <main class="flex-1 flex flex-col bg-slate-950 relative overflow-hidden">
-      
-      <!-- SECCIÓN CHAT -->
-      <div id="sectionChat" class="flex-1 flex flex-col h-full">
-        <div id="chatMessages" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
-          <div class="flex items-start gap-2 max-w-[85%]">
-            <div class="w-8 h-8 rounded-full border border-purple-400 bg-slate-800 flex items-center justify-center text-base shrink-0">🦉</div>
-            <div>
-              <div class="text-[11px] font-bold text-indigo-300">Atenea</div>
-              <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-2xl text-xs text-slate-200">
-                ¡Bienvenidos a Éter Chat y Red Social! ✨
-              </div>
+    <!-- ÁREA PRINCIPAL -->
+    <div class="content-area">
+
+        <!-- PANTALLA 1: INICIAR SESIÓN / REGISTRARSE -->
+        <div class="screen active" id="screenAuth">
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">INICIAR SESIÓN</button>
+                <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">REGISTRARSE</button>
             </div>
-          </div>
-        </div>
 
-        <div class="p-2 bg-slate-900/90 border-t border-slate-800/80 shrink-0">
-          <div class="flex items-center gap-1.5">
-            <input type="text" id="messageInput" placeholder="Escribe un mensaje..." onkeypress="handleKeyPress(event)" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500">
-            <button onclick="sendMessage()" class="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 font-bold flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-paper-plane text-xs"></i>
-            </button>
-          </div>
-        </div>
-      </div>
+            <!-- INICIAR SESIÓN -->
+            <div id="formLoginContainer">
+                <button class="btn-google" onclick="loginGoogle()">
+                    <i class="fa-brands fa-google" style="color:#EA4335;"></i> Continuar con Gmail
+                </button>
+                
+                <div class="divider">— O CON TU CREDENCIAL —</div>
 
-      <!-- SECCIÓN RED SOCIAL / FEED -->
-      <div id="sectionFeed" class="flex-1 hidden overflow-y-auto custom-scrollbar p-3 space-y-4">
-        <!-- CREAR PUBLICACIÓN -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow">
-          <textarea id="postInput" placeholder="¿Qué está pasando en el Olimpo hoy?..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-purple-500 resize-none h-16"></textarea>
-          <div class="flex justify-between items-center mt-2">
-            <div class="flex gap-2 text-purple-400 text-sm">
-              <button class="p-1"><i class="fa-solid fa-image"></i></button>
-              <button class="p-1"><i class="fa-solid fa-face-smile"></i></button>
+                <div class="form-group">
+                    <input type="text" id="loginUser" class="form-control" placeholder="Usuario / Alias o Sultán">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPass" class="form-control" placeholder="Contraseña">
+                </div>
+
+                <button class="btn-primary" onclick="doLogin()">INICIAR SESIÓN</button>
             </div>
-            <button onclick="createPost()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs">
-              Publicar
-            </button>
-          </div>
-        </div>
 
-        <!-- PUBLICACIONES (FEED) -->
-        <div id="feedList" class="space-y-3">
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 shadow">
-            <div class="flex items-center gap-2 mb-2">
-              <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-sm">⚡</div>
-              <div>
-                <p class="text-xs font-bold text-slate-200">Zeus Supremo</p>
-                <p class="text-[9px] text-slate-500">Hace 10 min</p>
-              </div>
+            <!-- REGISTRARSE -->
+            <div id="formRegisterContainer" style="display: none;">
+                <button class="btn-google" onclick="loginGoogle()">
+                    <i class="fa-brands fa-google" style="color:#EA4335;"></i> Registrarse con Gmail
+                </button>
+
+                <div class="divider">— REGISTRO ANÓNIMO —</div>
+
+                <div class="form-group">
+                    <input type="text" id="regUser" class="form-control" placeholder="Crea un Usuario / Alias">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="regPass" class="form-control" placeholder="Crea una Contraseña">
+                </div>
+
+                <div class="form-group">
+                    <label>SELECCIONA TU AVATAR PREDETERMINADO:</label>
+                    <div class="avatar-picker" id="regAvatarPicker"></div>
+                </div>
+
+                <button class="btn-primary" onclick="doRegister()">CREAR MI CUENTA</button>
             </div>
-            <p class="text-xs text-slate-300 mb-3">¡Lanzando nuevos rayos de actualización para la red social de Éter! ⚡✨</p>
-            <div class="flex items-center gap-4 text-xs text-slate-400 border-t border-slate-800/80 pt-2">
-              <button onclick="toggleLike(this)" class="flex items-center gap-1 hover:text-red-400"><i class="fa-regular fa-heart"></i> <span>24</span></button>
-              <button class="flex items-center gap-1 hover:text-purple-400"><i class="fa-regular fa-comment"></i> <span>5</span></button>
+        </div>
+
+        <!-- PANTALLA 2: SALAS POR PAÍSES & ESPECIALES -->
+        <div class="screen" id="screenRooms">
+            <div class="category-scroll">
+                <div class="chip active" onclick="filterContinent('todos', this)">🌐 Todos</div>
+                <div class="chip" onclick="filterContinent('america', this)">🌎 América</div>
+                <div class="chip" onclick="filterContinent('europa', this)">🌍 Europa</div>
+                <div class="chip" onclick="filterContinent('asia', this)">🌏 Asia</div>
+                <div class="chip" onclick="filterContinent('africa', this)">🌍 África</div>
+                <div class="chip" onclick="filterContinent('oceania', this)">🌏 Oceanía</div>
             </div>
-          </div>
-        </div>
-      </div>
 
-    </main>
+            <div class="room-grid" id="roomListContainer">
+                <!-- La Mezquita -->
+                <div class="room-card" onclick="openChat('La Mezquita (Radio & Música)', 'special')">
+                    <div class="room-info">
+                        <div class="flag-icon">🕌</div>
+                        <div class="room-details">
+                            <h4>La Mezquita</h4>
+                            <p>Música transmitida por El Sultán</p>
+                        </div>
+                    </div>
+                    <span class="room-badge badge-special">EN VIVO</span>
+                </div>
 
-    <!-- NAVEGACIÓN INFERIOR (TAB BAR RED SOCIAL) -->
-    <nav class="h-14 bg-slate-900 border-t border-slate-800/80 flex items-center justify-around shrink-0 z-20">
-      <button onclick="switchTab('chat')" id="tabChatBtn" class="flex flex-col items-center gap-0.5 text-purple-400">
-        <i class="fa-solid fa-comments text-base"></i>
-        <span class="text-[9px] font-semibold">Chats</span>
-      </button>
-      <button onclick="switchTab('feed')" id="tabFeedBtn" class="flex flex-col items-center gap-0.5 text-slate-400">
-        <i class="fa-solid fa-newspaper text-base"></i>
-        <span class="text-[9px] font-semibold">Muro Social</span>
-      </button>
-    </nav>
+                <!-- La Mazmorra -->
+                <div class="room-card dungeon-card" onclick="openDungeonRoom()">
+                    <div class="room-info">
+                        <div class="flag-icon">⛓️</div>
+                        <div class="room-details">
+                            <h4 style="color: var(--danger);">La Mazmorra</h4>
+                            <p>Destierro para infractores de reglas</p>
+                        </div>
+                    </div>
+                    <span class="room-badge badge-danger">CASTIGO</span>
+                </div>
 
-  </div>
+                <!-- SALAS VIP -->
+                <div class="room-card" onclick="openVipRoom('Babilonia VIP')">
+                    <div class="room-info">
+                        <div class="flag-icon">🏛️</div>
+                        <div class="room-details">
+                            <h4>Babilonia VIP</h4>
+                            <p>Llamadas, Video y Audios de Voz</p>
+                        </div>
+                    </div>
+                    <span class="room-badge badge-vip">VIP USD</span>
+                </div>
 
-  <!-- JAVASCRIPT CORREGIDO -->
-  <script>
-    // ACCESO CONCEDIDO
-    function handleAuth() {
-      const authScreen = document.getElementById('authScreen');
-      const mainApp = document.getElementById('mainApp');
-      
-      authScreen.classList.add('opacity-0', 'pointer-events-none');
-      setTimeout(() => {
-        authScreen.classList.add('hidden');
-        mainApp.classList.remove('hidden');
-      }, 300);
-    }
+                <div class="room-card" onclick="openVipRoom('El Oasis VIP')">
+                    <div class="room-info">
+                        <div class="flag-icon">🌴</div>
+                        <div class="room-details">
+                            <h4>El Oasis VIP</h4>
+                            <p>Sala Relajada de Audio y Videollamadas</p>
+                        </div>
+                    </div>
+                    <span class="room-badge badge-vip">VIP USD</span>
+                </div>
 
-    // CAMBIAR PESTAÑA (CHAT / FEED)
-    function switchTab(tab) {
-      const sectionChat = document.getElementById('sectionChat');
-      const sectionFeed = document.getElementById('sectionFeed');
-      const tabChatBtn = document.getElementById('tabChatBtn');
-      const tabFeedBtn = document.getElementById('tabFeedBtn');
-
-      if (tab === 'chat') {
-        sectionChat.classList.remove('hidden');
-        sectionFeed.classList.add('hidden');
-        tabChatBtn.className = "flex flex-col items-center gap-0.5 text-purple-400";
-        tabFeedBtn.className = "flex flex-col items-center gap-0.5 text-slate-400";
-      } else {
-        sectionChat.classList.add('hidden');
-        sectionFeed.classList.remove('hidden');
-        tabChatBtn.className = "flex flex-col items-center gap-0.5 text-slate-400";
-        tabFeedBtn.className = "flex flex-col items-center gap-0.5 text-purple-400";
-      }
-    }
-
-    // MENÚ LATERAL DRAWER
-    function toggleRoomsDrawer() {
-      const drawer = document.getElementById('roomsDrawer');
-      const overlay = document.getElementById('roomsDrawerOverlay');
-      const isOpen = !drawer.classList.contains('-translate-x-full');
-
-      if (isOpen) {
-        drawer.classList.add('-translate-x-full');
-        overlay.classList.add('opacity-0', 'pointer-events-none');
-      } else {
-        drawer.classList.remove('-translate-x-full');
-        overlay.classList.remove('opacity-0', 'pointer-events-none');
-      }
-    }
-
-    // ENVIAR MENSAJE DE CHAT
-    function sendMessage() {
-      const input = document.getElementById('messageInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      const chatContainer = document.getElementById('chatMessages');
-      const msgHTML = `
-        <div class="flex items-start gap-2 max-w-[85%] ml-auto flex-row-reverse">
-          <div class="w-8 h-8 rounded-full border border-amber-400 bg-slate-800 flex items-center justify-center text-base shrink-0">⚡</div>
-          <div>
-            <div class="text-[11px] font-bold text-amber-300 text-right">Tú</div>
-            <div class="bg-purple-600 text-white p-2.5 rounded-2xl text-xs shadow">${text}</div>
-          </div>
-        </div>
-      `;
-      chatContainer.insertAdjacentHTML('beforeend', msgHTML);
-      input.value = '';
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    function handleKeyPress(e) {
-      if (e.key === 'Enter') sendMessage();
-    }
-
-    // CREAR PUBLICACIÓN EN LA RED SOCIAL
-    function createPost() {
-      const postInput = document.getElementById('postInput');
-      const text = postInput.value.trim();
-      if (!text) return;
-
-      const feedList = document.getElementById('feedList');
-      const postHTML = `
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 shadow">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-sm">⚡</div>
-            <div>
-              <p class="text-xs font-bold text-slate-200">Tú (Dios Chibi)</p>
-              <p class="text-[9px] text-slate-500">Ahora mismo</p>
+                <div class="room-card" onclick="openVipRoom('El Cairo VIP')">
+                    <div class="room-info">
+                        <div class="flag-icon">🏺</div>
+                        <div class="room-details">
+                            <h4>El Cairo VIP</h4>
+                            <p>Alta Sociedad, Videos y Debates</p>
+                        </div>
+                    </div>
+                    <span class="room-badge badge-vip">VIP USD</span>
+                </div>
             </div>
-          </div>
-          <p class="text-xs text-slate-300 mb-3">${text}</p>
-          <div class="flex items-center gap-4 text-xs text-slate-400 border-t border-slate-800/80 pt-2">
-            <button onclick="toggleLike(this)" class="flex items-center gap-1 hover:text-red-400"><i class="fa-regular fa-heart"></i> <span>0</span></button>
-            <button class="flex items-center gap-1 hover:text-purple-400"><i class="fa-regular fa-comment"></i> <span>0</span></button>
-          </div>
         </div>
-      `;
-      feedList.insertAdjacentHTML('afterbegin', postHTML);
-      postInput.value = '';
+
+        <!-- PANTALLA 3: CHAT ACTIVO -->
+        <div class="screen" id="screenChat" style="height: 100%;">
+            <div class="chat-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <button onclick="navTo('screenRooms')" style="background: none; border: none; color: var(--electric-cyan); font-size: 0.9rem; font-weight: 800; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i> Volver</button>
+                    <h4 id="activeRoomTitle" style="font-size: 0.95rem; font-weight: 800; color: var(--neon-gold);">Sala</h4>
+                    <div></div>
+                </div>
+
+                <!-- CAJA DE MENSAJES -->
+                <div class="chat-messages" id="chatBox">
+                    <div class="bubble incoming">
+                        <span class="sender">OlimPUSchAT Bot</span>
+                        ¡Te has conectado exitosamente a la sala!
+                    </div>
+                </div>
+
+                <!-- EMOJIS Y STICKERS -->
+                <div class="emoji-picker-box" id="emojiBox">
+                    <div class="emoji-grid">
+                        <span onclick="insertEmoji('😀')">😀</span>
+                        <span onclick="insertEmoji('🔥')">🔥</span>
+                        <span onclick="insertEmoji('👑')">👑</span>
+                        <span onclick="insertEmoji('❤️')">❤️</span>
+                        <span onclick="insertEmoji('🚀')">🚀</span>
+                        <span onclick="insertEmoji('🎉')">🎉</span>
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--neon-gold); font-weight: 800; margin-top: 5px;">STICKERS DE LA BÓVEDA:</div>
+                    <div class="stickers-container" id="chatStickersList"></div>
+                </div>
+
+                <!-- ENTRADA DE CHAT -->
+                <div class="chat-input-wrapper">
+                    <div class="chat-tools-bar">
+                        <i class="fa-regular fa-face-smile chat-tool-btn" onclick="toggleEmojiBox()" title="Emojis & Stickers"></i>
+                        <i class="fa-regular fa-image chat-tool-btn" onclick="triggerImageUpload()" title="Enviar Imagen"></i>
+                        <i class="fa-solid fa-microphone chat-tool-btn vip-active" onclick="handleVipTool('Audio de Voz')" title="Audio (Solo VIP)"></i>
+                        <i class="fa-solid fa-video chat-tool-btn vip-active" onclick="handleVipTool('Video')" title="Video (Solo VIP)"></i>
+                        <i class="fa-solid fa-phone chat-tool-btn vip-active" onclick="handleVipTool('Llamada')" title="Llamada (Solo VIP)"></i>
+                    </div>
+
+                    <div class="chat-input-row">
+                        <input type="text" id="msgInput" placeholder="Escribe un mensaje...">
+                        <button class="action-btn" onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+
+                <input type="file" id="hiddenFileInput" accept="image/*" style="display: none;" onchange="handleImageSelected(this)">
+            </div>
+        </div>
+
+        <!-- PANTALLA 4: MI PERFIL -->
+        <div class="screen" id="screenProfile">
+            <h3 style="color: var(--electric-cyan); margin-bottom: 12px; font-weight: 900;"><i class="fa-solid fa-user-gear"></i> Mi Perfil Imperial</h3>
+
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img id="profileCurrentAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Ares" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--electric-cyan); background: var(--card-bg);">
+                <p style="font-size: 0.8rem; color: var(--neon-gold); font-weight: 800; margin-top: 5px;">Karma: <span id="userKarmaDisplay">0</span> PTS</p>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;" id="vipStatusBadge">Membresía: Estándar</p>
+            </div>
+
+            <div class="form-group">
+                <label>AVATARES DE LA BÓVEDA PARA TU PERFIL:</label>
+                <div class="avatar-picker" id="profileAvatarPicker"></div>
+            </div>
+
+            <div class="form-group">
+                <label>ALIAS / NOMBRE PÚBLICO:</label>
+                <input type="text" id="profUsername" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>GÉNERO:</label>
+                <select id="profGender" class="form-control">
+                    <option value="Prefiero no decir">Prefiero no decir</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>EDAD:</label>
+                <input type="number" id="profAge" class="form-control" placeholder="Ej. 25">
+            </div>
+
+            <div class="form-group">
+                <label>PAÍS / NACIONALIDAD:</label>
+                <input type="text" id="profCountry" class="form-control" placeholder="Ej. México">
+            </div>
+
+            <div class="form-group">
+                <label>PROFESIÓN / HOBBY:</label>
+                <input type="text" id="profHobby" class="form-control" placeholder="Ej. Desarrollador / Gamer">
+            </div>
+
+            <button class="btn-primary" onclick="saveProfile()">GUARDAR CAMBIOS</button>
+        </div>
+
+        <!-- PANTALLA 5: BÓVEDA DEL SULTÁN -->
+        <div class="screen" id="screenVault">
+            <h3 style="color: var(--neon-gold); margin-bottom: 12px; font-weight: 900;"><i class="fa-solid fa-vault"></i> Bóveda Imperial del Sultán</h3>
+
+            <!-- CONFIGURAR MÉTODOS DE PAGO -->
+            <div class="vault-box" style="border-color: var(--electric-cyan);">
+                <div class="vault-title" style="color: var(--electric-cyan);"><i class="fa-solid fa-credit-card"></i> Configurar Métodos de Pago</div>
+                
+                <div class="form-group">
+                    <label style="color: #0070BA;"><i class="fa-brands fa-paypal"></i> Correo PayPal de Cobro:</label>
+                    <input type="email" id="vaultPaypalEmail" class="form-control" value="cobros@olimpuschat.com">
+                </div>
+
+                <div class="form-group">
+                    <label style="color: #F0B90B;"><i class="fa-solid fa-coins"></i> Binance Pay ID / Billetera USDT:</label>
+                    <input type="text" id="vaultBinanceId" class="form-control" value="Binance ID: 88920194 / USDT TRC20: T...XYZ">
+                </div>
+
+                <button class="btn-primary" style="background: linear-gradient(135deg, var(--electric-cyan), var(--neon-purple));" onclick="savePaymentSettings()">GUARDAR DATOS DE PAGO</button>
+            </div>
+
+            <!-- SUBIR AVATAR -->
+            <div class="vault-box">
+                <div class="vault-title"><i class="fa-solid fa-user-plus"></i> Subir y Publicar Avatar</div>
+                <div class="form-group">
+                    <input type="text" id="vaultAvatarName" class="form-control" placeholder="Nombre del Avatar">
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn-secondary" onclick="document.getElementById('vaultAvatarFileInput').click()"><i class="fa-solid fa-image"></i> Cargar Imagen de la Galería</button>
+                    <input type="file" id="vaultAvatarFileInput" accept="image/*" style="display:none;" onchange="previewAvatarFile(this)">
+                    <input type="text" id="vaultAvatarUrl" class="form-control" placeholder="O pega URL de la imagen/SVG" style="margin-top:6px;">
+                </div>
+
+                <div style="display:flex; gap:8px;">
+                    <input type="number" id="vaultAvatarKarma" class="form-control" placeholder="Precio Karma">
+                    <input type="number" id="vaultAvatarUsd" class="form-control" placeholder="Precio $ USD">
+                </div>
+
+                <button class="btn-primary" style="margin-top:10px;" onclick="addVaultAvatar()">SUBIR Y PUBLICAR AVATAR</button>
+            </div>
+
+            <!-- SUBIR STICKER -->
+            <div class="vault-box">
+                <div class="vault-title"><i class="fa-solid fa-icons"></i> Subir Sticker para el Chat</div>
+                <div class="form-group">
+                    <input type="text" id="vaultStickerName" class="form-control" placeholder="Nombre del Sticker">
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn-secondary" onclick="document.getElementById('vaultStickerFileInput').click()"><i class="fa-solid fa-file-image"></i> Cargar Imagen de Sticker</button>
+                    <input type="file" id="vaultStickerFileInput" accept="image/*" style="display:none;" onchange="previewStickerFile(this)">
+                    <input type="text" id="vaultStickerUrl" class="form-control" placeholder="O pega URL de la imagen" style="margin-top:6px;">
+                </div>
+
+                <div style="display:flex; gap:8px;">
+                    <input type="number" id="vaultStickerKarma" class="form-control" placeholder="Precio Karma">
+                    <input type="number" id="vaultStickerUsd" class="form-control" placeholder="Precio $ USD">
+                </div>
+
+                <button class="btn-primary" style="margin-top:10px;" onclick="addVaultSticker()">PUBLICAR STICKER EN EL CHAT</button>
+            </div>
+
+            <!-- DESTIERRO -->
+            <div class="vault-box" style="border-color: var(--danger);">
+                <div class="vault-title" style="color: var(--danger);"><i class="fa-solid fa-dungeon"></i> Enviar a La Mazmorra</div>
+                <div class="form-group">
+                    <input type="text" id="banishTargetUser" class="form-control" placeholder="Alias del usuario">
+                </div>
+                <button class="btn-primary" style="background: var(--danger);" onclick="banishUserAction()">DESTERRAAR A LA MAZMORRA</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL DE COMPRA / ENVIAR COMPROBANTE AL CORREO -->
+    <div class="modal-overlay" id="modalPurchaseProof">
+        <div class="modal-card">
+            <h3 style="color: var(--neon-gold); text-align: center;" id="modalPurchaseTitle">Confirmar Compra</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); text-align: center;" id="modalPurchaseDetails">Cargando detalles...</p>
+
+            <!-- Formulario FormSubmit enviado directamente a imperiochasts@gmail.com -->
+            <form action="https://formsubmit.co/imperiochasts@gmail.com" method="POST" enctype="multipart/form-data" id="proofForm" target="_blank" onsubmit="handleProofSubmit()">
+                
+                <input type="hidden" name="_subject" id="formSubject" value="Nuevo Comprobante de Pago OlimPUSchAT">
+                <input type="hidden" name="Articulo_Comprado" id="formArticleName" value="">
+                <input type="hidden" name="Monto_USD" id="formArticlePrice" value="">
+                <input type="hidden" name="Metodo_Pago" id="formPaymentMethod" value="">
+
+                <div class="form-group">
+                    <label>TU NOMBRE DE USUARIO:</label>
+                    <input type="text" name="Usuario_Comprador" id="proofUsername" class="form-control" required readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>ADJUNTAR FOTO/CAPTURA DEL COMPROBANTE:</label>
+                    <input type="file" name="Comprobante_Pago" id="proofFileInput" class="form-control" accept="image/*" required>
+                </div>
+
+                <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, var(--success), #00A859); color:#000;"><i class="fa-solid fa-paper-plane"></i> ENVIAR COMPROBANTE AUTOMÁTICO</button>
+            </form>
+
+            <button style="background: none; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; margin-top: 4px;" onclick="closePurchaseModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL MEMBRESÍA VIP -->
+    <div class="modal-overlay" id="modalVipPurchase">
+        <div class="modal-card">
+            <h3 style="color: var(--neon-gold); text-align: center;"><i class="fa-solid fa-crown"></i> Acceso a Salas VIP</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">Elige tu método de pago para activar la Membresía VIP ($4.99 USD):</p>
+
+            <button class="btn-paypal" onclick="openPurchaseModal('Membresía VIP USD', '4.99', 'PayPal')"><i class="fa-brands fa-paypal"></i> PAGAR CON PAYPAL</button>
+            <button class="btn-binance" onclick="openPurchaseModal('Membresía VIP USD', '4.99', 'Binance Pay')"><i class="fa-solid fa-coins"></i> PAGAR CON BINANCE</button>
+            
+            <button style="background: none; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; margin-top:5px;" onclick="closeVipModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL CREAR SALA -->
+    <div class="modal-overlay" id="modalCreateRoom">
+        <div class="modal-card">
+            <h3 style="color: var(--electric-cyan); text-align: center;">Crear Sala de Chat</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;" id="modalRoomNotice">Puedes crear hasta 3 salas gratis.</p>
+            
+            <input type="text" id="newRoomName" class="form-control" placeholder="Nombre de tu Sala">
+            <select id="newRoomIcon" class="form-control">
+                <option value="💬">💬 Conversación General</option>
+                <option value="🎮">🎮 Videojuegos</option>
+                <option value="🎵">🎵 Música & Fiesta</option>
+            </select>
+
+            <div id="paymentButtonsRoom" style="display:none; flex-direction:column; gap:8px;">
+                <button class="btn-paypal" onclick="openPurchaseModal('Creación 4ª Sala Adicional', '1.99', 'PayPal')"><i class="fa-brands fa-paypal"></i> PAGAR $1.99 CON PAYPAL</button>
+                <button class="btn-binance" onclick="openPurchaseModal('Creación 4ª Sala Adicional', '1.99', 'Binance Pay')"><i class="fa-solid fa-coins"></i> PAGAR $1.99 CON BINANCE</button>
+            </div>
+
+            <button class="btn-primary" onclick="confirmCreateRoomFree()" id="btnConfirmCreateFree">CREAR SALA GRATIS</button>
+            <button style="background: none; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer;" onclick="closeCreateModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- BARRA INFERIOR -->
+    <div class="bottom-nav">
+        <div class="nav-item active" id="navRooms" onclick="navTo('screenRooms')">
+            <i class="fa-solid fa-earth-americas"></i>
+            <span>Salas</span>
+        </div>
+        <div class="nav-item" onclick="openCreateModal()">
+            <i class="fa-solid fa-plus-circle"></i>
+            <span>Crear</span>
+        </div>
+        <div class="nav-item" id="navProfile" onclick="navTo('screenProfile')">
+            <i class="fa-solid fa-user"></i>
+            <span>Perfil</span>
+        </div>
+        <div class="nav-item" id="navVault" style="display: none;" onclick="navTo('screenVault')">
+            <i class="fa-solid fa-crown"></i>
+            <span>Bóveda</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // CONFIGURACIÓN DE FIREBASE EN TIEMPO REAL
+    const firebaseConfig = {
+        databaseURL: "https://olimpuschat-default-rtdb.firebaseio.com/"
+    };
+    
+    // Inicializar Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    // ESTADO DEL USUARIO
+    let user = { 
+        isLoggedIn: false,
+        username: '', 
+        isSultan: false, 
+        isVip: false,
+        createdRoomsCount: 0,
+        karma: 250,
+        gender: 'Prefiero no decir',
+        age: '',
+        country: '',
+        hobby: '',
+        avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Ares',
+        isBanished: false
+    };
+
+    let paymentConfig = {
+        paypalEmail: 'cobros@olimpuschat.com',
+        binanceId: 'Binance ID: 88920194 / USDT TRC20: T...XYZ'
+    };
+
+    let currentActiveRoomType = 'public';
+    let currentRoomId = 'general';
+    let pendingVipRoomName = '';
+    let tempAvatarLoaded = '';
+    let tempStickerLoaded = '';
+
+    let vaultAvatars = [
+        { name: 'Ares', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Ares', priceUsd: '0', priceKarma: '0' },
+        { name: 'Zeus', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Zeus', priceUsd: '0', priceKarma: '0' },
+        { name: 'Apolo', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Apolo', priceUsd: '0', priceKarma: '0' },
+        { name: 'Atenea', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Atenea', priceUsd: '0', priceKarma: '0' }
+    ];
+
+    let vaultStickers = [
+        { name: 'Sultán Guiño', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Sticker1', priceUsd: '0.99' },
+        { name: 'Fuego Imperial', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Sticker2', priceUsd: '0.99' }
+    ];
+
+    const countryDatabase = [
+        { name: 'México 🇲🇽', continent: 'america', count: '1,840' },
+        { name: 'Colombia 🇨🇴', continent: 'america', count: '1,120' },
+        { name: 'Argentina 🇦🇷', continent: 'america', count: '1,300' },
+        { name: 'España 🇪🇸', continent: 'europa', count: '2,450' },
+        { name: 'Japón 🇯🇵', continent: 'asia', count: '2,100' }
+    ];
+
+    window.onload = function() {
+        renderCountryRooms('todos');
+        renderAvatarPickers();
+        renderStickersList();
+        listenToCustomRooms();
+    };
+
+    function navTo(screenId) {
+        if (!user.isLoggedIn && screenId !== 'screenAuth') {
+            alert('Debes iniciar sesión o registrarte primero para acceder.');
+            return;
+        }
+
+        if (user.isBanished && screenId !== 'screenChat') {
+            alert('Estás desterrado en La Mazmorra.');
+            return;
+        }
+
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        if (screenId === 'screenRooms') document.getElementById('navRooms').classList.add('active');
+        if (screenId === 'screenProfile') document.getElementById('navProfile').classList.add('active');
+        if (screenId === 'screenVault') document.getElementById('navVault').classList.add('active');
     }
 
-    // ME GUSTA
-    function toggleLike(btn) {
-      const icon = btn.querySelector('i');
-      const span = btn.querySelector('span');
-      let count = parseInt(span.innerText);
-
-      if (icon.classList.contains('fa-regular')) {
-        icon.className = 'fa-solid fa-heart text-red-500';
-        span.innerText = count + 1;
-      } else {
-        icon.className = 'fa-regular fa-heart';
-        span.innerText = count - 1;
-      }
+    function switchAuthTab(tab) {
+        if (tab === 'login') {
+            document.getElementById('tabLoginBtn').classList.add('active');
+            document.getElementById('tabRegisterBtn').classList.remove('active');
+            document.getElementById('formLoginContainer').style.display = 'block';
+            document.getElementById('formRegisterContainer').style.display = 'none';
+        } else {
+            document.getElementById('tabRegisterBtn').classList.add('active');
+            document.getElementById('tabLoginBtn').classList.remove('active');
+            document.getElementById('formLoginContainer').style.display = 'none';
+            document.getElementById('formRegisterContainer').style.display = 'block';
+        }
     }
 
-    // DESCARGAR APP MÓVIL (PWA / APK)
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-    });
+    function renderAvatarPickers() {
+        const regPicker = document.getElementById('regAvatarPicker');
+        const profPicker = document.getElementById('profileAvatarPicker');
+        
+        let html = '';
+        vaultAvatars.forEach(av => {
+            const isSelected = av.url === user.avatar ? 'selected' : '';
+            const hasPrice = av.priceUsd && av.priceUsd !== '0';
+            const priceTag = hasPrice ? `<button class="buy-mini-btn" onclick="openPurchaseModal('${av.name}', '${av.priceUsd}', 'PayPal')">$${av.priceUsd}</button>` : '';
 
-    function downloadApp() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            alert('¡Gracias por instalar Éter Social en tu dispositivo!');
-          }
-          deferredPrompt = null;
+            html += `
+                <div class="avatar-item-wrapper">
+                    <img src="${av.url}" class="avatar-img ${isSelected}" onclick="selectUserAvatar(this, '${av.url}')">
+                    ${priceTag}
+                </div>
+            `;
         });
-      } else {
-        alert('Para descargar / instalar en tu teléfono:\n\n1. Abre el menú del navegador (tres puntos ⋮ arriba a la derecha).\n2. Selecciona "Añadir a la pantalla de inicio" o "Instalar aplicación".');
-      }
+
+        if (regPicker) regPicker.innerHTML = html;
+        if (profPicker) profPicker.innerHTML = html;
     }
-  </script>
+
+    function renderStickersList() {
+        const container = document.getElementById('chatStickersList');
+        let html = '';
+        vaultStickers.forEach(st => {
+            html += `
+                <div class="sticker-card-item">
+                    <img src="${st.url}" class="sticker-item" onclick="sendSticker('${st.url}')">
+                    <button class="buy-mini-btn" onclick="openPurchaseModal('Sticker: ${st.name}', '${st.priceUsd || '0.99'}', 'PayPal')">$${st.priceUsd || '0.99'}</button>
+                </div>
+            `;
+        });
+        if (container) container.innerHTML = html;
+    }
+
+    function selectUserAvatar(element, url) {
+        document.querySelectorAll('.avatar-img').forEach(i => i.classList.remove('selected'));
+        element.classList.add('selected');
+        user.avatar = url;
+        document.getElementById('profileCurrentAvatar').src = url;
+    }
+
+    function doLogin() {
+        const u = document.getElementById('loginUser').value.trim();
+        const p = document.getElementById('loginPass').value.trim();
+
+        if (u === 'El_sultan_de_tu_corazon' && p === 'Sultan_Imperium_2026!$X') {
+            user.isSultan = true;
+            user.isVip = true;
+            user.username = '👑 El Sultán';
+            user.karma = 99999;
+            document.getElementById('navVault').style.display = 'flex';
+        } else if (u) {
+            user.username = u;
+            user.isSultan = false;
+            document.getElementById('navVault').style.display = 'none';
+        } else {
+            alert('Por favor introduce tu usuario.');
+            return;
+        }
+
+        user.isLoggedIn = true;
+        document.getElementById('headerUserBadge').innerHTML = `<i class="fa-solid fa-user"></i> ${user.username}`;
+        document.getElementById('profUsername').value = user.username;
+        document.getElementById('userKarmaDisplay').innerText = user.karma;
+        
+        // Registrar en línea en Firebase
+        db.ref('presence/' + user.username).set({ online: true, time: Date.now() });
+        navTo('screenRooms');
+    }
+
+    function doRegister() {
+        const u = document.getElementById('regUser').value.trim();
+        const p = document.getElementById('regPass').value.trim();
+
+        if (!u || !p) {
+            alert('Completa usuario y contraseña.');
+            return;
+        }
+
+        user.username = u;
+        user.isLoggedIn = true;
+        document.getElementById('headerUserBadge').innerHTML = `<i class="fa-solid fa-user"></i> ${user.username}`;
+        document.getElementById('profUsername').value = user.username;
+        
+        db.ref('presence/' + user.username).set({ online: true, time: Date.now() });
+        alert('¡Cuenta creada exitosamente!');
+        navTo('screenRooms');
+    }
+
+    function loginGoogle() {
+        user.username = "Usuario_Gmail_" + Math.floor(Math.random() * 1000);
+        user.isLoggedIn = true;
+        document.getElementById('headerUserBadge').innerHTML = `<i class="fa-solid fa-user"></i> ${user.username}`;
+        document.getElementById('profUsername').value = user.username;
+        
+        db.ref('presence/' + user.username).set({ online: true, time: Date.now() });
+        navTo('screenRooms');
+    }
+
+    function renderCountryRooms(continent) {
+        const container = document.getElementById('roomListContainer');
+        container.querySelectorAll('.country-item').forEach(e => e.remove());
+
+        countryDatabase.forEach(c => {
+            if (continent === 'todos' || c.continent === continent) {
+                const item = document.createElement('div');
+                item.className = 'room-card country-item';
+                item.onclick = () => openChat(`Chat ${c.name}`, 'public');
+                item.innerHTML = `
+                    <div class="room-info">
+                        <div class="flag-icon">${c.name.split(' ').pop()}</div>
+                        <div class="room-details">
+                            <h4>${c.name}</h4>
+                            <p>${c.count} conectados</p>
+                        </div>
+                    </div>
+                    <span class="room-badge badge-live">ONLINE</span>
+                `;
+                container.appendChild(item);
+            }
+        });
+    }
+
+    function filterContinent(cat, chipElement) {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chipElement.classList.add('active');
+        renderCountryRooms(cat);
+    }
+
+    function openCreateModal() {
+        if (!user.isLoggedIn) {
+            alert('Debes iniciar sesión para crear salas.');
+            return;
+        }
+
+        const notice = document.getElementById('modalRoomNotice');
+        const freeBtn = document.getElementById('btnConfirmCreateFree');
+        const payBtns = document.getElementById('paymentButtonsRoom');
+
+        if (user.createdRoomsCount < 3 || user.isVip || user.isSultan) {
+            notice.innerHTML = `Tienes <strong style="color:var(--success)">${3 - user.createdRoomsCount} salas gratuitas</strong> disponibles.`;
+            freeBtn.style.display = 'block';
+            payBtns.style.display = 'none';
+        } else {
+            notice.innerHTML = `<strong style="color:var(--neon-gold)">¡Límite alcanzado!</strong><br>La 4ª sala requiere un pago de $1.99 USD.`;
+            freeBtn.style.display = 'none';
+            payBtns.style.display = 'flex';
+        }
+
+        document.getElementById('modalCreateRoom').classList.add('active');
+    }
+
+    function closeCreateModal() {
+        document.getElementById('modalCreateRoom').classList.remove('active');
+    }
+
+    function confirmCreateRoomFree() {
+        createRoomInList();
+    }
+
+    function createRoomInList() {
+        const name = document.getElementById('newRoomName').value.trim();
+        const icon = document.getElementById('newRoomIcon').value;
+
+        if (!name) return;
+
+        user.createdRoomsCount++;
+
+        // Guardar sala en Firebase para que todos la vean en tiempo real
+        db.ref('rooms').push({
+            name: name,
+            icon: icon,
+            creator: user.username
+        });
+
+        document.getElementById('newRoomName').value = '';
+        closeCreateModal();
+        alert(`¡La sala "${name}" ha sido publicada en tiempo real!`);
+    }
+
+    function listenToCustomRooms() {
+        db.ref('rooms').on('child_added', snapshot => {
+            const r = snapshot.val();
+            const container = document.getElementById('roomListContainer');
+            const newCard = document.createElement('div');
+            newCard.className = 'room-card';
+            newCard.onclick = () => openChat(r.name, 'public');
+            newCard.innerHTML = `
+                <div class="room-info">
+                    <div class="flag-icon">${r.icon}</div>
+                    <div class="room-details">
+                        <h4>${r.name}</h4>
+                        <p>Creada por ${r.creator}</p>
+                    </div>
+                </div>
+                <span class="room-badge badge-special">EN VIVO</span>
+            `;
+            container.insertBefore(newCard, container.firstChild);
+        });
+    }
+
+    // MODAL DE PAGO Y ENVIAR COMPROBANTE AL CORREO
+    function openPurchaseModal(articleName, priceUsd, method) {
+        closeVipModal();
+        closeCreateModal();
+
+        document.getElementById('modalPurchaseTitle').innerText = `Comprar ${articleName}`;
+        
+        let paymentInfo = method === 'PayPal' ? `PayPal: ${paymentConfig.paypalEmail}` : `Binance: ${paymentConfig.binanceId}`;
+        document.getElementById('modalPurchaseDetails').innerHTML = `
+            Precio: <strong style="color:var(--neon-gold);">$${priceUsd} USD</strong><br>
+            Instrucciones: Realiza el pago a <strong>${paymentInfo}</strong> y sube el comprobante.
+        `;
+
+        document.getElementById('formArticleName').value = articleName;
+        document.getElementById('formArticlePrice').value = priceUsd;
+        document.getElementById('formPaymentMethod').value = method;
+        document.getElementById('proofUsername').value = user.username;
+
+        document.getElementById('modalPurchaseProof').classList.add('active');
+    }
+
+    function closePurchaseModal() {
+        document.getElementById('modalPurchaseProof').classList.remove('active');
+    }
+
+    function handleProofSubmit() {
+        alert(`¡Comprobante enviado a imperiochasts@gmail.com!\nEl Sultán procesará tu compra para el usuario "${user.username}".`);
+        setTimeout(() => closePurchaseModal(), 1000);
+    }
+
+    function openVipRoom(name) {
+        if (!user.isVip && !user.isSultan) {
+            pendingVipRoomName = name;
+            document.getElementById('modalVipPurchase').classList.add('active');
+            return;
+        }
+        openChat(name, 'vip');
+    }
+
+    function closeVipModal() {
+        document.getElementById('modalVipPurchase').classList.remove('active');
+    }
+
+    // ABRIR CHAT Y ESCUCHAR MENSAJES DE FIREBASE
+    function openChat(title, type) {
+        currentActiveRoomType = type;
+        currentRoomId = title.replace(/[^a-zA-Z0-9]/g, "_");
+        document.getElementById('activeRoomTitle').innerText = title;
+        
+        const box = document.getElementById('chatBox');
+        box.innerHTML = `<div class="bubble incoming"><span class="sender">Sistema</span> Conectado en vivo a ${title}.</div>`;
+
+        // Limpiar escuchas anteriores y conectar al canal Firebase de la sala
+        db.ref('chats/' + currentRoomId).off();
+        db.ref('chats/' + currentRoomId).limitToLast(20).on('child_added', snapshot => {
+            const m = snapshot.val();
+            renderIncomingBubble(m);
+        });
+
+        navTo('screenChat');
+    }
+
+    function renderIncomingBubble(msgObj) {
+        const box = document.getElementById('chatBox');
+        const isSelf = msgObj.sender === user.username;
+        const b = document.createElement('div');
+        b.className = `bubble ${isSelf ? 'outgoing' : 'incoming'}`;
+
+        let contentHtml = msgObj.text || '';
+        if (msgObj.image) {
+            contentHtml += `<br><img src="${msgObj.image}" class="chat-image-content">`;
+        }
+
+        b.innerHTML = `<span class="sender" style="color:${isSelf ? '#FFF' : 'var(--neon-gold)'}">${msgObj.sender}</span> ${contentHtml}`;
+        box.appendChild(b);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function openDungeonRoom() {
+        if (!user.isBanished && !user.isSultan) {
+            alert('Esta sala es exclusiva para usuarios desterrados o moderadores.');
+            return;
+        }
+        openChat('⛓️ La Mazmorra (Aislamiento)', 'dungeon');
+    }
+
+    function sendMsg() {
+        const inp = document.getElementById('msgInput');
+        if (!inp.value.trim()) return;
+
+        db.ref('chats/' + currentRoomId).push({
+            sender: user.username,
+            text: inp.value,
+            timestamp: Date.now()
+        });
+
+        inp.value = '';
+        document.getElementById('emojiBox').style.display = 'none';
+    }
+
+    function sendSticker(stickerUrl) {
+        db.ref('chats/' + currentRoomId).push({
+            sender: user.username,
+            image: stickerUrl,
+            timestamp: Date.now()
+        });
+        document.getElementById('emojiBox').style.display = 'none';
+    }
+
+    function toggleEmojiBox() {
+        const box = document.getElementById('emojiBox');
+        box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function insertEmoji(emoji) {
+        const input = document.getElementById('msgInput');
+        input.value += emoji;
+    }
+
+    function triggerImageUpload() {
+        document.getElementById('hiddenFileInput').click();
+    }
+
+    function handleImageSelected(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                db.ref('chats/' + currentRoomId).push({
+                    sender: user.username,
+                    image: e.target.result,
+                    timestamp: Date.now()
+                });
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function handleVipTool(toolName) {
+        if (currentActiveRoomType !== 'vip' && !user.isSultan) {
+            alert(`🔒 La función de "${toolName}" es exclusiva de las SALAS VIP.`);
+        } else {
+            alert(`🎙️ Transmitiendo ${toolName} en vivo dentro de la sala VIP...`);
+        }
+    }
+
+    function saveProfile() {
+        user.username = document.getElementById('profUsername').value.trim();
+        user.gender = document.getElementById('profGender').value;
+        user.age = document.getElementById('profAge').value;
+        user.country = document.getElementById('profCountry').value;
+        user.hobby = document.getElementById('profHobby').value;
+
+        document.getElementById('headerUserBadge').innerHTML = `<i class="fa-solid fa-user"></i> ${user.username}`;
+        alert('Perfil guardado correctamente.');
+    }
+
+    function savePaymentSettings() {
+        paymentConfig.paypalEmail = document.getElementById('vaultPaypalEmail').value.trim();
+        paymentConfig.binanceId = document.getElementById('vaultBinanceId').value.trim();
+        alert('¡Datos de pago actualizados por El Sultán!');
+    }
+
+    function previewAvatarFile(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempAvatarLoaded = e.target.result;
+                alert('¡Imagen cargada desde la galería correctamente!');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function addVaultAvatar() {
+        const name = document.getElementById('vaultAvatarName').value.trim();
+        const urlInput = document.getElementById('vaultAvatarUrl').value.trim();
+        const karma = document.getElementById('vaultAvatarKarma').value;
+        const usd = document.getElementById('vaultAvatarUsd').value;
+
+        const finalUrl = tempAvatarLoaded || urlInput;
+
+        if (!name || !finalUrl) {
+            alert('Por favor selecciona una imagen de la galería o escribe una URL.');
+            return;
+        }
+
+        vaultAvatars.push({ name: name, url: finalUrl, priceKarma: karma, priceUsd: usd });
+        renderAvatarPickers();
+        tempAvatarLoaded = '';
+        document.getElementById('vaultAvatarName').value = '';
+        document.getElementById('vaultAvatarUrl').value = '';
+        alert(`¡Avatar "${name}" publicado! Ya está disponible en la lista de perfiles.`);
+    }
+
+    function previewStickerFile(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempStickerLoaded = e.target.result;
+                alert('¡Sticker cargado desde la galería correctamente!');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function addVaultSticker() {
+        const name = document.getElementById('vaultStickerName').value.trim();
+        const urlInput = document.getElementById('vaultStickerUrl').value.trim();
+        const usd = document.getElementById('vaultStickerUsd').value;
+
+        const finalUrl = tempStickerLoaded || urlInput;
+
+        if (!name || !finalUrl) {
+            alert('Por favor carga una imagen para el Sticker.');
+            return;
+        }
+
+        vaultStickers.push({ name: name, url: finalUrl, priceUsd: usd });
+        renderStickersList();
+        tempStickerLoaded = '';
+        document.getElementById('vaultStickerName').value = '';
+        document.getElementById('vaultStickerUrl').value = '';
+        alert(`¡Sticker "${name}" publicado! Ya está disponible para enviar en los chats.`);
+    }
+
+    function banishUserAction() {
+        const target = document.getElementById('banishTargetUser').value.trim();
+        if (!target) return;
+        alert(`El usuario "${target}" ha sido enviado a La Mazmorra.`);
+    }
+</script>
 </body>
 </html>
