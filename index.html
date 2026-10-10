@@ -1,10 +1,16 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Éter Chat Mobile</title>
+  <title>Éter Chat & Red Social</title>
+  
+  <!-- Configuración PWA para instalación móvil -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#090d16">
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -28,13 +34,6 @@
       50% { opacity: 1; transform: scale(1.05); }
     }
     .glow-effect { animation: pulseGlow 3s infinite ease-in-out; }
-
-    /* Audio wave animation */
-    @keyframes waveBar {
-      0%, 100% { height: 4px; }
-      50% { height: 16px; }
-    }
-    .animate-wave-bar { animation: waveBar 1.2s infinite ease-in-out; }
   </style>
 </head>
 <body class="w-screen h-screen overflow-hidden flex flex-col bg-slate-950 text-slate-100 select-none">
@@ -46,8 +45,8 @@
         <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-400 flex items-center justify-center text-white font-bold text-3xl mx-auto mb-3 shadow-lg shadow-purple-500/30 glow-effect">
           ✨
         </div>
-        <h2 class="font-heading text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-300 to-amber-300 bg-clip-text text-transparent">Éter Chat</h2>
-        <p class="text-xs text-slate-400 mt-1">El chat místico de los dioses chibi</p>
+        <h2 class="font-heading text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-300 to-amber-300 bg-clip-text text-transparent">Éter Social</h2>
+        <p class="text-xs text-slate-400 mt-1">El chat místico y red social de los dioses</p>
       </div>
 
       <div class="mb-4">
@@ -57,10 +56,6 @@
         <select id="globalLanguage" class="w-full bg-slate-950 border border-slate-800 text-xs rounded-xl p-3 text-slate-200 focus:outline-none focus:border-purple-500">
           <option value="es">Español (ES)</option>
           <option value="en">English (US)</option>
-          <option value="fr">Français (FR)</option>
-          <option value="pt">Português (BR)</option>
-          <option value="it">Italiano (IT)</option>
-          <option value="ja">日本語 (JP)</option>
         </select>
       </div>
 
@@ -81,11 +76,9 @@
         </div>
 
         <button onclick="handleAuth()" class="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-slate-950 font-bold py-3 rounded-xl text-xs shadow-lg shadow-purple-500/20 transition active:scale-[0.98] mt-2">
-          Ingresar a Éter Chat
+          Ingresar a Éter
         </button>
       </div>
-
-      <p class="text-[10px] text-center text-slate-500 mt-4">Al ingresar aceptas las normas comunitarias del Olimpo.</p>
     </div>
   </div>
 
@@ -110,28 +103,20 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- KARMA -->
-        <div class="bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-full flex items-center gap-1 shadow-inner">
+        <!-- BOTÓN DESCARGAR APP MÓVIL -->
+        <button onclick="downloadApp()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold px-2.5 py-1 rounded-full text-[10px] flex items-center gap-1 shadow-md active:scale-95 transition">
+          <i class="fa-solid fa-download"></i>
+          <span>App Móvil</span>
+        </button>
+
+        <div class="bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-full flex items-center gap-1">
           <i class="fa-solid fa-star text-amber-400 text-[10px]"></i>
           <span class="text-xs font-bold text-amber-300" id="userKarma">1,250</span>
         </div>
-
-        <!-- BOTÓN DE 3 PUNTOS PARA CONFIGURACIÓN DE SALA -->
-        <button onclick="toggleModal('roomSettingsModal')" title="Ajustes de Sala" class="w-9 h-9 rounded-xl bg-slate-800/80 text-slate-300 flex items-center justify-center active:scale-95 transition border border-slate-700/50">
-          <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
-        </button>
-
-        <!-- FOTO DE PERFIL CLICKEABLE PARA ELEGIR CHIBI -->
-        <button onclick="toggleModal('profileModal')" title="Cambiar Avatar Chibi" class="w-9 h-9 rounded-full border-2 border-amber-400 bg-slate-800 flex items-center justify-center text-lg shadow-lg active:scale-95 transition relative">
-          <span id="headerUserAvatarIcon">⚡</span>
-          <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-purple-600 rounded-full border border-slate-900 flex items-center justify-center text-[7px] text-white">
-            <i class="fa-solid fa-pen"></i>
-          </span>
-        </button>
       </div>
     </header>
 
-    <!-- CAJÓN DESPLEGABLE DE SALAS (DRAWER) -->
+    <!-- DRAWER DE SALAS Y MENÚ -->
     <div id="roomsDrawerOverlay" onclick="toggleRoomsDrawer()" class="fixed inset-0 bg-slate-950/70 z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
     
     <div id="roomsDrawer" class="fixed inset-y-0 left-0 w-72 bg-slate-900/95 border-r border-purple-500/20 z-40 transform -translate-x-full transition-transform duration-300 flex flex-col shadow-2xl backdrop-blur-xl">
@@ -143,202 +128,238 @@
         <button onclick="toggleRoomsDrawer()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <!-- SWITCHER DE ROL PARA PRUEBAS -->
-      <div class="p-3 bg-slate-950/80 border-b border-slate-800/80 text-[11px]">
-        <label class="block text-slate-400 font-semibold mb-1 uppercase tracking-wider text-[9px] flex items-center justify-between">
-          <span>Simular Mi Rol:</span>
-          <span id="currentRoleBadge" class="text-amber-400 font-bold">Fundador</span>
-        </label>
-        <select id="roleSwitcher" onchange="switchRole(this.value)" class="w-full bg-slate-900 border border-purple-500/30 rounded-xl p-2 text-slate-200 focus:outline-none">
-          <option value="founder">👑 Fundador (Acceso Total + Audio Pro)</option>
-          <option value="mod">🛡️ Moderador Global</option>
-          <option value="user">👤 Usuario Normal</option>
-          <option value="prisoner">⛓️ Prisionero (Mazamorra)</option>
-        </select>
+      <div class="p-3 border-b border-slate-800">
+        <button onclick="downloadApp()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow">
+          <i class="fa-solid fa-mobile-screen-button"></i> Instalar / Descargar App
+        </button>
       </div>
 
       <!-- LISTA DE SALAS -->
       <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
-        <button onclick="selectRoom('general', 'Hogar Éter', '142 Dioses Online')" class="w-full text-left p-2.5 rounded-2xl flex items-center gap-3 bg-purple-500/15 border border-purple-500/30 text-purple-200 text-xs hover:bg-purple-500/20 transition">
+        <button onclick="selectRoom('general', 'Hogar Éter', '142 Dioses Online')" class="w-full text-left p-2.5 rounded-2xl flex items-center gap-3 bg-purple-500/15 border border-purple-500/30 text-purple-200 text-xs">
           <span class="w-8 h-8 rounded-xl bg-purple-600/30 flex items-center justify-center text-base shrink-0">🏛️</span>
-          <div class="min-w-0 flex-1">
-            <p class="font-bold truncate">Hogar Éter</p>
-            <p class="text-[10px] text-purple-300/70 truncate">Sala Principal del Olimpo</p>
+          <div>
+            <p class="font-bold">Hogar Éter</p>
+            <p class="text-[10px] text-purple-300/70">Sala Principal</p>
           </div>
         </button>
-
-        <button onclick="selectRoom('music', '🎵 Sala de Música Éter', '89 Dioses escuchando')" class="w-full text-left p-2.5 rounded-2xl flex items-center gap-3 bg-slate-800/40 border border-slate-800/80 text-slate-300 text-xs hover:bg-slate-800 transition">
-          <span class="w-8 h-8 rounded-xl bg-pink-600/30 flex items-center justify-center text-base shrink-0">🎵</span>
-          <div class="min-w-0 flex-1">
-            <p class="font-bold truncate">Sala de Música</p>
-            <p class="text-[10px] text-pink-400 truncate">Transmisión Live • En Vivo</p>
-          </div>
-        </button>
-
-        <button onclick="selectRoom('dating', '💘 Citas Divinas', '56 Parejas creadas')" class="w-full text-left p-2.5 rounded-2xl flex items-center gap-3 bg-slate-800/40 border border-slate-800/80 text-slate-300 text-xs hover:bg-slate-800 transition">
-          <span class="w-8 h-8 rounded-xl bg-red-600/30 flex items-center justify-center text-base shrink-0">💘</span>
-          <div class="min-w-0 flex-1">
-            <p class="font-bold truncate">Citas Divinas</p>
-            <p class="text-[10px] text-amber-300/80 truncate">Match & Romance Místico</p>
-          </div>
-        </button>
-
-        <!-- SALA SECRETA: LA MAZAMORRA (SOLO VISIBLE PARA FUNDADOR, MOD Y PRISIONEROS) -->
-        <div id="mazamorraRoomContainer" class="pt-2 border-t border-slate-800/80">
-          <button onclick="selectRoom('mazamorra', '⛓️ La Mazamorra', '12 En prisi&oacute;n')" class="w-full text-left p-2.5 rounded-2xl flex items-center gap-3 bg-red-950/40 border border-red-800/60 text-red-300 text-xs hover:bg-red-950/70 transition">
-            <span class="w-8 h-8 rounded-xl bg-red-900/50 flex items-center justify-center text-base shrink-0">⛓️</span>
-            <div class="min-w-0 flex-1">
-              <p class="font-bold truncate text-red-400">La Mazamorra</p>
-              <p class="text-[10px] text-red-400/70 truncate">Prisión Secreta de Moderación</p>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <!-- FOOTER DRAWER -->
-      <div class="p-3 border-t border-slate-800 text-center text-[10px] text-slate-500">
-        Éter Chat Mobile v2.5 • AntiLand Edition
       </div>
     </div>
 
-    <!-- ÁREA DE CHAT MÓVIL -->
+    <!-- ÁREA DE CONTENIDO PRINCIPAL -->
     <main class="flex-1 flex flex-col bg-slate-950 relative overflow-hidden">
       
-      <!-- CONTENEDOR DE MENSAJES -->
-      <div id="chatMessages" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
-        
-        <!-- BANNER INFORMATIVO -->
-        <div class="flex justify-center my-2">
-          <div class="bg-purple-950/40 border border-purple-500/30 text-purple-200 text-[10px] px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg backdrop-blur-sm">
-            <i class="fa-solid fa-shield-halved text-amber-400"></i>
-            <span>Chat móvil activo. Envía voz, emojis o stickers de Dioses Chibi.</span>
-          </div>
-        </div>
-
-        <!-- MENSAJE MOCK DE EJEMPLO -->
-        <div class="flex items-start gap-2 max-w-[85%]">
-          <div class="w-8 h-8 rounded-full border border-purple-400 bg-slate-800 flex items-center justify-center text-base shrink-0 shadow">
-            🦉
-          </div>
-          <div>
-            <div class="flex items-baseline gap-1.5 mb-0.5">
-              <span class="text-[11px] font-bold text-indigo-300">Atenea (Sabiduría)</span>
-              <span class="text-[9px] text-slate-500">10:42 AM</span>
-            </div>
-            <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-2xl rounded-tl-none text-xs text-slate-200 shadow">
-              ¡Bienvenidos a Éter Chat! Los moderadores estamos atentos para mantener la paz en el Olimpo ✨
+      <!-- SECCIÓN CHAT -->
+      <div id="sectionChat" class="flex-1 flex flex-col h-full">
+        <div id="chatMessages" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
+          <div class="flex items-start gap-2 max-w-[85%]">
+            <div class="w-8 h-8 rounded-full border border-purple-400 bg-slate-800 flex items-center justify-center text-base shrink-0">🦉</div>
+            <div>
+              <div class="text-[11px] font-bold text-indigo-300">Atenea</div>
+              <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-2xl text-xs text-slate-200">
+                ¡Bienvenidos a Éter Chat y Red Social! ✨
+              </div>
             </div>
           </div>
         </div>
 
-      </div>
-
-      <!-- BARRA DE ENTRADA INFERIOR -->
-      <div class="p-2 bg-slate-900/90 border-t border-slate-800/80 shrink-0 backdrop-blur-md">
-        <div class="flex items-center gap-1.5">
-          
-          <!-- BOTÓN STICKERS CHIBI -->
-          <button onclick="toggleModal('stickersModal')" title="Stickers Chibi" class="w-9 h-9 rounded-xl bg-slate-800 text-purple-400 hover:text-amber-300 flex items-center justify-center shrink-0 active:scale-95 transition border border-purple-500/20">
-            <i class="fa-solid fa-face-smile text-sm"></i>
-          </button>
-
-          <!-- INPUT DE TEXTO -->
-          <div class="flex-1 min-w-0">
-            <input type="text" id="messageInput" placeholder="Escribe un mensaje o emoji 😃..." onkeypress="handleKeyPress(event)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500 transition">
+        <div class="p-2 bg-slate-900/90 border-t border-slate-800/80 shrink-0">
+          <div class="flex items-center gap-1.5">
+            <input type="text" id="messageInput" placeholder="Escribe un mensaje..." onkeypress="handleKeyPress(event)" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-purple-500">
+            <button onclick="sendMessage()" class="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 font-bold flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-paper-plane text-xs"></i>
+            </button>
           </div>
-
-          <!-- BOTÓN NOTA DE VOZ (TODOS LOS USUARIOS) -->
-          <button onclick="sendVoiceNote()" title="Grabar Nota de Voz" class="w-9 h-9 rounded-xl bg-slate-800 text-red-400 flex items-center justify-center shrink-0 active:scale-95 transition border border-slate-700/60">
-            <i class="fa-solid fa-microphone text-xs"></i>
-          </button>
-
-          <!-- BOTÓN AUDIO EXCLUSIVO FUNDADOR -->
-          <button id="founderAudioBtn" onclick="sendFounderAudio()" title="Audio Pro / Canción (Exclusivo Fundador)" class="w-9 h-9 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-amber-300 flex items-center justify-center shrink-0 active:scale-95 transition shadow-lg shadow-purple-600/30 border border-amber-400/30">
-            <i class="fa-solid fa-music text-xs"></i>
-          </button>
-
-          <!-- BOTÓN ENVIAR MENSAJE -->
-          <button onclick="sendMessage()" class="w-9 h-9 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-bold flex items-center justify-center shrink-0 active:scale-95 transition shadow-lg shadow-amber-500/20">
-            <i class="fa-solid fa-paper-plane text-xs"></i>
-          </button>
-
         </div>
       </div>
+
+      <!-- SECCIÓN RED SOCIAL / FEED -->
+      <div id="sectionFeed" class="flex-1 hidden overflow-y-auto custom-scrollbar p-3 space-y-4">
+        <!-- CREAR PUBLICACIÓN -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow">
+          <textarea id="postInput" placeholder="¿Qué está pasando en el Olimpo hoy?..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-purple-500 resize-none h-16"></textarea>
+          <div class="flex justify-between items-center mt-2">
+            <div class="flex gap-2 text-purple-400 text-sm">
+              <button class="p-1"><i class="fa-solid fa-image"></i></button>
+              <button class="p-1"><i class="fa-solid fa-face-smile"></i></button>
+            </div>
+            <button onclick="createPost()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs">
+              Publicar
+            </button>
+          </div>
+        </div>
+
+        <!-- PUBLICACIONES (FEED) -->
+        <div id="feedList" class="space-y-3">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 shadow">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-sm">⚡</div>
+              <div>
+                <p class="text-xs font-bold text-slate-200">Zeus Supremo</p>
+                <p class="text-[9px] text-slate-500">Hace 10 min</p>
+              </div>
+            </div>
+            <p class="text-xs text-slate-300 mb-3">¡Lanzando nuevos rayos de actualización para la red social de Éter! ⚡✨</p>
+            <div class="flex items-center gap-4 text-xs text-slate-400 border-t border-slate-800/80 pt-2">
+              <button onclick="toggleLike(this)" class="flex items-center gap-1 hover:text-red-400"><i class="fa-regular fa-heart"></i> <span>24</span></button>
+              <button class="flex items-center gap-1 hover:text-purple-400"><i class="fa-regular fa-comment"></i> <span>5</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
+
+    <!-- NAVEGACIÓN INFERIOR (TAB BAR RED SOCIAL) -->
+    <nav class="h-14 bg-slate-900 border-t border-slate-800/80 flex items-center justify-around shrink-0 z-20">
+      <button onclick="switchTab('chat')" id="tabChatBtn" class="flex flex-col items-center gap-0.5 text-purple-400">
+        <i class="fa-solid fa-comments text-base"></i>
+        <span class="text-[9px] font-semibold">Chats</span>
+      </button>
+      <button onclick="switchTab('feed')" id="tabFeedBtn" class="flex flex-col items-center gap-0.5 text-slate-400">
+        <i class="fa-solid fa-newspaper text-base"></i>
+        <span class="text-[9px] font-semibold">Muro Social</span>
+      </button>
+    </nav>
+
   </div>
 
-  <!-- MODAL: CONFIGURACIÓN DE SALA (3 PUNTOS) -->
-  <div id="roomSettingsModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-5 shadow-2xl relative flex flex-col max-h-[85vh]">
-      <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-2.5">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-gear text-purple-400 text-sm"></i>
-          <h3 class="font-heading text-sm font-bold text-purple-300">Ajustes de Sala</h3>
-        </div>
-        <button onclick="toggleModal('roomSettingsModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-      </div>
+  <!-- JAVASCRIPT CORREGIDO -->
+  <script>
+    // ACCESO CONCEDIDO
+    function handleAuth() {
+      const authScreen = document.getElementById('authScreen');
+      const mainApp = document.getElementById('mainApp');
+      
+      authScreen.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        authScreen.classList.add('hidden');
+        mainApp.classList.remove('hidden');
+      }, 300);
+    }
 
-      <div class="flex-1 overflow-y-auto custom-scrollbar space-y-4 text-xs pr-1">
-        
-        <!-- EDITAR NOMBRE DE SALA (SOLO CREADOR/FUNDADOR) -->
-        <div id="editRoomSection" class="bg-slate-950/80 p-3 rounded-2xl border border-purple-500/30">
-          <label class="block font-bold text-purple-300 mb-1.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-crown text-amber-400 text-[10px]"></i>
-            <span>Nombre de la Sala (Edición del Fundador):</span>
-          </label>
-          <div class="flex gap-2">
-            <input type="text" id="roomNameInput" value="Hogar Éter" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-slate-100 focus:outline-none focus:border-purple-500">
-            <button onclick="updateRoomName()" class="bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded-xl shadow active:scale-95 transition">
-              Guardar
-            </button>
+    // CAMBIAR PESTAÑA (CHAT / FEED)
+    function switchTab(tab) {
+      const sectionChat = document.getElementById('sectionChat');
+      const sectionFeed = document.getElementById('sectionFeed');
+      const tabChatBtn = document.getElementById('tabChatBtn');
+      const tabFeedBtn = document.getElementById('tabFeedBtn');
+
+      if (tab === 'chat') {
+        sectionChat.classList.remove('hidden');
+        sectionFeed.classList.add('hidden');
+        tabChatBtn.className = "flex flex-col items-center gap-0.5 text-purple-400";
+        tabFeedBtn.className = "flex flex-col items-center gap-0.5 text-slate-400";
+      } else {
+        sectionChat.classList.add('hidden');
+        sectionFeed.classList.remove('hidden');
+        tabChatBtn.className = "flex flex-col items-center gap-0.5 text-slate-400";
+        tabFeedBtn.className = "flex flex-col items-center gap-0.5 text-purple-400";
+      }
+    }
+
+    // MENÚ LATERAL DRAWER
+    function toggleRoomsDrawer() {
+      const drawer = document.getElementById('roomsDrawer');
+      const overlay = document.getElementById('roomsDrawerOverlay');
+      const isOpen = !drawer.classList.contains('-translate-x-full');
+
+      if (isOpen) {
+        drawer.classList.add('-translate-x-full');
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+      } else {
+        drawer.classList.remove('-translate-x-full');
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    // ENVIAR MENSAJE DE CHAT
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatContainer = document.getElementById('chatMessages');
+      const msgHTML = `
+        <div class="flex items-start gap-2 max-w-[85%] ml-auto flex-row-reverse">
+          <div class="w-8 h-8 rounded-full border border-amber-400 bg-slate-800 flex items-center justify-center text-base shrink-0">⚡</div>
+          <div>
+            <div class="text-[11px] font-bold text-amber-300 text-right">Tú</div>
+            <div class="bg-purple-600 text-white p-2.5 rounded-2xl text-xs shadow">${text}</div>
           </div>
         </div>
+      `;
+      chatContainer.insertAdjacentHTML('beforeend', msgHTML);
+      input.value = '';
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 
-        <!-- LINK DE INVITACIÓN DE LA SALA -->
-        <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800">
-          <label class="block font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-link text-indigo-400 text-[10px]"></i>
-            <span>Enlace (Link) de Invitación:</span>
-          </label>
-          <div class="flex gap-2">
-            <input type="text" id="roomLinkInput" readonly value="https://eterchat.app/room/hogar-eter" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5 text-slate-400 select-all font-mono text-[11px]">
-            <button onclick="copyRoomLink()" title="Copiar Enlace" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl transition active:scale-95">
-              <i class="fa-solid fa-copy"></i>
-            </button>
-          </div>
-        </div>
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') sendMessage();
+    }
 
-        <!-- LISTA DE ROLES DE LA SALA -->
-        <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 space-y-2">
-          <p class="font-bold text-slate-400 uppercase tracking-wider text-[9px] flex items-center justify-between">
-            <span>Jerarquía de Participantes</span>
-            <span class="text-emerald-400">En línea</span>
-          </p>
-          
-          <div class="space-y-1.5 text-[11px]">
-            <div class="flex items-center justify-between bg-slate-900/90 p-2 rounded-xl border border-amber-500/30">
-              <span class="font-bold text-amber-300 flex items-center gap-1">
-                <span>👑</span> Fundador:
-              </span>
-              <span class="text-slate-200 font-semibold" id="roomFounderName">Zeus Supremo</span>
-            </div>
-            <div class="flex items-center justify-between bg-slate-900/90 p-2 rounded-xl border border-indigo-500/30">
-              <span class="font-bold text-indigo-300 flex items-center gap-1">
-                <span>🛡️</span> Moderadores:
-              </span>
-              <span class="text-slate-300">Atenea, Thor</span>
-            </div>
-            <div class="flex items-center justify-between bg-slate-900/90 p-2 rounded-xl border border-slate-800">
-              <span class="font-bold text-slate-400 flex items-center gap-1">
-                <span>👤</span> Usuarios Activos:
-              </span>
-              <span class="text-slate-300">Anubis, Shiva +139</span>
+    // CREAR PUBLICACIÓN EN LA RED SOCIAL
+    function createPost() {
+      const postInput = document.getElementById('postInput');
+      const text = postInput.value.trim();
+      if (!text) return;
+
+      const feedList = document.getElementById('feedList');
+      const postHTML = `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 shadow">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-sm">⚡</div>
+            <div>
+              <p class="text-xs font-bold text-slate-200">Tú (Dios Chibi)</p>
+              <p class="text-[9px] text-slate-500">Ahora mismo</p>
             </div>
           </div>
+          <p class="text-xs text-slate-300 mb-3">${text}</p>
+          <div class="flex items-center gap-4 text-xs text-slate-400 border-t border-slate-800/80 pt-2">
+            <button onclick="toggleLike(this)" class="flex items-center gap-1 hover:text-red-400"><i class="fa-regular fa-heart"></i> <span>0</span></button>
+            <button class="flex items-center gap-1 hover:text-purple-400"><i class="fa-regular fa-comment"></i> <span>0</span></button>
+          </div>
         </div>
+      `;
+      feedList.insertAdjacentHTML('afterbegin', postHTML);
+      postInput.value = '';
+    }
 
-      </div>
-    </div>
-  </div>
+    // ME GUSTA
+    function toggleLike(btn) {
+      const icon = btn.querySelector('i');
+      const span = btn.querySelector('span');
+      let count = parseInt(span.innerText);
 
-  <!-- MODAL: SELECCIÓN DE LOS 12 DIOSES
+      if (icon.classList.contains('fa-regular')) {
+        icon.className = 'fa-solid fa-heart text-red-500';
+        span.innerText = count + 1;
+      } else {
+        icon.className = 'fa-regular fa-heart';
+        span.innerText = count - 1;
+      }
+    }
+
+    // DESCARGAR APP MÓVIL (PWA / APK)
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    function downloadApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            alert('¡Gracias por instalar Éter Social en tu dispositivo!');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        alert('Para descargar / instalar en tu teléfono:\n\n1. Abre el menú del navegador (tres puntos ⋮ arriba a la derecha).\n2. Selecciona "Añadir a la pantalla de inicio" o "Instalar aplicación".');
+      }
+    }
+  </script>
+</body>
+</html>
